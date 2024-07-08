@@ -29,3 +29,9 @@ module "security_groups" {
   asg       = "${local.name}_asg_SG"
   rds       = "${local.name}_rds_SG"
 }
+
+module "keypair" {
+  source       = "./module/keypair"
+  prv_key_filename = "${local.name}_private_key"
+  pub_key_filename = "${local.name}_public_key"
+}

@@ -45,7 +45,7 @@ resource "aws_security_group" "jenkins-sg" {
   }
 }
 
- # Bastion SG
+ # Bastion security group
  resource "aws_security_group" "bastion-sg" {
   name        = var.bastion
   description = "bastion Security Group"
