@@ -33,7 +33,7 @@ module "security_groups" {
 }
 
 module "keypair" {
-  source       = "./module/keypair"
+  source           = "./module/keypair"
   prv_key_filename = "${local.name}_private_key"
   pub_key_filename = "${local.name}_public_key"
 }
@@ -43,11 +43,11 @@ module "bastion" {
   source        = "./module/bastion"
   ami           = "ami-0c38b837cd80f13bb"
   subnet_id     = module.vpc.pubsn2_id
-  ssh_key       = module.keypair.pub_key_pair_id
+  ssh_key       = module.keypair.pub_keypair_id
   instance_type = "t2.micro"
   private_key   = module.keypair.private_key_pem
   name          = "${local.name}_bastion_host"
-  bastion_sg    = module.securitygroup.bastion-sg
+  bastion_sg    = module.security_groups.bastion-sg
 }
 
 # Creating sonarqube instance
@@ -56,7 +56,7 @@ module "sonarqube" {
   ami                   = "ami-0c38b837cd80f13bb"
   sonarqube_server_name = "${local.name}_sonarqube"
   instance_type         = "t2.medium"
-  key_name              = module.keypair.pub_key_pair_id
-  sonarqube-sg          = module.securitygroup.sonarqube-sg
+  key_name              = module.keypair.pub_keypair_id
+  sonarqube-sg          = module.security_groups.sonarqube-sg
   subnet_id             = module.vpc.pubsn1_id
 }
