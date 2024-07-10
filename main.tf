@@ -1,3 +1,5 @@
+# ubuntu ami- ami-0c38b837cd80f13bb
+# Redhat ami- ami-07d4917b6f95f5c2a
 locals {
   name = "pet_auto"
 }
@@ -34,4 +36,27 @@ module "keypair" {
   source       = "./module/keypair"
   prv_key_filename = "${local.name}_private_key"
   pub_key_filename = "${local.name}_public_key"
+}
+
+# Creating bastion host
+module "bastion" {
+  source        = "./module/bastion"
+  ami           = "ami-0c38b837cd80f13bb"
+  subnet_id     = module.vpc.pubsn2_id
+  ssh_key       = module.keypair.pub_key_pair_id
+  instance_type = "t2.micro"
+  private_key   = module.keypair.private_key_pem
+  name          = "${local.name}_bastion_host"
+  bastion_sg    = module.securitygroup.bastion-sg
+}
+
+# Creating sonarqube instance
+module "sonarqube" {
+  source                = "./module/sonarqube"
+  ami                   = "ami-0c38b837cd80f13bb"
+  sonarqube_server_name = "${local.name}_sonarqube"
+  instance_type         = "t2.medium"
+  key_name              = module.keypair.pub_key_pair_id
+  sonarqube-sg          = module.securitygroup.sonarqube-sg
+  subnet_id             = module.vpc.pubsn1_id
 }
