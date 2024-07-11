@@ -38,7 +38,6 @@ module "keypair" {
   pub_key_filename = "${local.name}_public_key"
 }
 
-# Creating bastion host
 module "bastion" {
   source        = "./module/bastion"
   ami           = "ami-0c38b837cd80f13bb"
@@ -50,7 +49,6 @@ module "bastion" {
   bastion_sg    = module.security_groups.bastion-sg
 }
 
-# Creating sonarqube instance
 module "sonarqube" {
   source                = "./module/sonarqube"
   ami                   = "ami-0c38b837cd80f13bb"
@@ -59,4 +57,21 @@ module "sonarqube" {
   key_name              = module.keypair.pub_keypair_id
   sonarqube-sg          = module.security_groups.sonarqube-sg
   subnet_id             = module.vpc.pubsn1_id
+}
+
+module "ansible" {
+  source = "./module/ansible"
+  red_hat = "ami-07d4917b6f95f5c2a"
+  ansible_subnet = module.vpc.prvsn1_id
+  pub_key = module.keypair.pub_key_pair_id
+  ansible_sg = module.securitygroup.ansible-sg
+  ansible_name = "${local.name}-ansible" 
+  stage-playbook = "${path.root}/module/ansible/stage_playbook.yml"
+  prod-playbook = "${path.root}/module/ansible/prod_playbook.yml"
+  stage-discovery-script = "${path.root}/module/ansible/auto_discovery_stage.tf"
+  prod-discovery-script = "${path.root}/module/ansible/auto_discovery_prod.tf"
+  private_key = module.keypair.private_key_pem
+  nexus-ip = module.nexus.nexus_ip
+  newrelic-license-key = "NRAK-W7PYXA013NC8GAFZL30HD58HOUO"
+  newrelic-acct-id = "4456322"  
 }
