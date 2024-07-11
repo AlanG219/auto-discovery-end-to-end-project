@@ -54,8 +54,8 @@ locals {
         # Setting permissions for the copied files
         sudo chown -R ec2-user:ec2-user /etc/ansible
         sudo chmod 400 /home/ec2-user/.ssh/id_rsa
-        sudo chmod 755 /etc/ansible/stage-discovery-script.sh
-        sudo chmod 755 /etc/ansible/prod-discovery-script.sh
+        sudo chmod 755 /etc/ansible/auto_discovery_stage.tf
+        sudo chmod 755 /etc/ansible/auto_discovery_prod.tf
     }
 
     # Function to configure cron jobs for the discovery scripts

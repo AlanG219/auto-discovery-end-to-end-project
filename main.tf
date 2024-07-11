@@ -4,6 +4,12 @@ locals {
   name = "pet_auto"
 }
 
+# data "aws_acm_certificate" "acm-cert" {
+#   domain = "ticktocktv.com" 
+#   types       = ["AMAZON_ISSUED"]
+#   most_recent = true
+# }
+
 module "vpc" {
   source = "./module/vpc"
   avz1   = "eu-west-1b"
@@ -64,10 +70,10 @@ module "nexus" {
   red_hat      = "ami-07d4917b6f95f5c2a"
   nexus_subnet = module.vpc.pubsn1_id
   pub_key      = module.keypair.pub_keypair_id
-  nexus_sg     = module.securitygroup.nexus-sg
+  nexus_sg     = module.security_groups.nexus-sg
   nexus_name   = "${local.name}-nexus"
   subnet-elb = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
-  cert-arn = data.aws_acm_certificate.acm-cert.arn
+  #cert-arn = data.aws_acm_certificate.acm-cert.arn
   newrelic_api_key = "NRAK-RIPYJAFBUGD6OB6W2RANMN3MYSQ"
   newrelic_account_id = "4466696"
   newrelic_region = "US"
