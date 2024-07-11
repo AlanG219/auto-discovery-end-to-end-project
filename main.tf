@@ -59,12 +59,26 @@ module "sonarqube" {
   subnet_id             = module.vpc.pubsn1_id
 }
 
+module "nexus" {
+  source       = "./module/nexus"
+  red_hat      = "ami-07d4917b6f95f5c2a"
+  nexus_subnet = module.vpc.pubsn1_id
+  pub_key      = module.keypair.pub_keypair_id
+  nexus_sg     = module.securitygroup.nexus-sg
+  nexus_name   = "${local.name}-nexus"
+  subnet-elb = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
+  cert-arn = data.aws_acm_certificate.acm-cert.arn
+  newrelic_api_key = "NRAK-RIPYJAFBUGD6OB6W2RANMN3MYSQ"
+  newrelic_account_id = "4466696"
+  newrelic_region = "US"
+}
+
 module "ansible" {
   source = "./module/ansible"
   red_hat = "ami-07d4917b6f95f5c2a"
   ansible_subnet = module.vpc.prvsn1_id
-  pub_key = module.keypair.pub_key_pair_id
-  ansible_sg = module.securitygroup.ansible-sg
+  pub_key = module.keypair.pub_keypair_id
+  ansible_sg = module.security_groups.ansible-sg
   ansible_name = "${local.name}-ansible" 
   stage-playbook = "${path.root}/module/ansible/stage_playbook.yml"
   prod-playbook = "${path.root}/module/ansible/prod_playbook.yml"
