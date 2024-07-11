@@ -175,7 +175,7 @@ install_newrelic() {
     # Download and install New Relic CLI
     curl -Ls https://download.newrelic.com/install/newrelic-cli/scripts/install.sh | bash
     # Install New Relic with provided API key and account ID
-    sudo NEW_RELIC_API_KEY=NRAK-DKQ2N9WXV6A63PVHNF3DRG6SHE6 NEW_RELIC_ACCOUNT_ID=3644862 NEW_RELIC_REGION=EU /usr/local/bin/newrelic install -y
+    sudo NEW_RELIC_API_KEY=NRAK-RIPYJAFBUGD6OB6W2RANMN3MYSQ NEW_RELIC_ACCOUNT_ID=4466696 NEW_RELIC_REGION=US /usr/local/bin/newrelic install -y
 }
 
 # Function to set hostname

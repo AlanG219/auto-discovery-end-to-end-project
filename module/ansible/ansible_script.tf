@@ -69,7 +69,7 @@ locals {
     install_newrelic() {
         echo "Installing New Relic..."
         curl -Ls https://download.newrelic.com/install/newrelic-cli/scripts/install.sh | bash
-        sudo NEW_RELIC_API_KEY="${var.newrelic-license-key}" NEW_RELIC_ACCOUNT_ID="${var.newrelic-acct-id}" NEW_RELIC_REGION=EU /usr/local/bin/newrelic install -y
+        sudo NEW_RELIC_API_KEY="${var.newrelic-license-key}" NEW_RELIC_ACCOUNT_ID="${var.newrelic-acct-id}" NEW_RELIC_REGION=US /usr/local/bin/newrelic install -y
     }
 
     # Function to set the hostname

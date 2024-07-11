@@ -72,6 +72,6 @@ module "ansible" {
   prod-discovery-script = "${path.root}/module/ansible/auto_discovery_prod.tf"
   private_key = module.keypair.private_key_pem
   nexus-ip = module.nexus.nexus_ip
-  newrelic-license-key = "NRAK-W7PYXA013NC8GAFZL30HD58HOUO"
-  newrelic-acct-id = "4456322"  
+  newrelic-license-key = "NRAK-RIPYJAFBUGD6OB6W2RANMN3MYSQ"
+  newrelic-acct-id = "4466696"  
 }
