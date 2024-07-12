@@ -1,6 +1,30 @@
 # Auto-discovery-end-to-end-project
 My personal end to end pet-clinic auto discovey project 
 
+# Project Overview
+
+This project focuses on automating the process of continuous integration and delivery using a Jenkins pipeline. It eliminates manual steps by automating actions between staging and production environments. The pipeline sequence demonstrates continuous integration up to the staging phase and continuous delivery to the production environment. Additionally, it showcases the use of an Auto Scaling Group (ASG) to launch instances from the staging environment to the production setup.
+# Key Features
+
+    Automated Deployment: Jenkins triggers Ansible playbooks to dynamically update IP addresses in the host inventory file whenever ASG modifies instances.
+    Continuous Delivery: The pipeline facilitates the deployment of Docker images as containers within the Docker host environment.
+    Vault Integration: All processes are initiated upon activating the vault component.
+
+# Tools and Technologies
+
+    Terraform (IAC): For infrastructure automation and management.
+    Ansible: For configuration management and application deployment.
+    Vault: For secure storage of secrets and sensitive data.
+    SonarQube: For continuous inspection of code quality.
+    Jenkins: For automating the CI/CD pipeline.
+    New Relic: For monitoring application performance and infrastructure.
+    Slack: For team communication and notifications.
+    GitHub: For version control and collaboration.
+    Nexus: For repository management.
+    Docker Hub: For container image storage.
+    Amazon Web Services (AWS): For cloud infrastructure.
+    Visual Studio Code: For development and editing.
+
 # Setting up github repository
 A github repo is created for this project. Even though this is a solo project a testing branch is created so that 
 code can be organized, tested and experimented outside of the main branch, once tested it is pushed to main.
