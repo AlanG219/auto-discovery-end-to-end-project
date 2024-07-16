@@ -79,6 +79,22 @@ module "nexus" {
   newrelic_region = "US"
 }
 
+module "jenkins" {
+  source       = "./module/jenkins"
+  ami-redhat   = "ami-07d4917b6f95f5c2a"
+  vpc_id = module.vpc.vpc_id
+  subnet-id    = module.vpc.prvsn1_id
+  jenkins-sg   = module.securitygroup.Jenkins-sg
+  key-name     = module.keypair.pub_keypair_id
+  jenkins-name = "${local.name}_jenkins"
+  nexus-ip     = module.nexus.nexus_ip
+  cert-arn     = data.aws_acm_certificate.acm-cert.arn
+  subnet-elb   = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
+  nr-key       = "NRAK-RIPYJAFBUGD6OB6W2RANMN3MYSQ"
+  nr-acc-id    = "4466696"
+  nr-region    = "US"
+}
+
 module "ansible" {
   source = "./module/ansible"
   red_hat = "ami-07d4917b6f95f5c2a"
@@ -94,6 +110,17 @@ module "ansible" {
   nexus-ip = module.nexus.nexus_ip
   newrelic-license-key = "NRAK-RIPYJAFBUGD6OB6W2RANMN3MYSQ"
   newrelic-acct-id = "4466696"  
+}
+
+module "rds" {
+  source        = "./module/rds"
+  rds_subgroup  = "rds_subgroup"
+  rds_subnet_id = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
+  db_subtag     = "${local.name}_db_subgroup"
+  db_name       = "petclinic"
+  db_username   = "admin"#data.vault_generic_secret.vault_secret.data["username"]
+  db_password   = "admin123"#data.vault_generic_secret.vault_secret.data["password"]
+  rds_sg        = [module.securitygroup.rds-sg]
 }
 
 module "prod-lb" {
