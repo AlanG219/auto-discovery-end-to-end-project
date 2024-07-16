@@ -49,7 +49,7 @@ locals {
         sudo echo "${file(var.stage-discovery-script)}" >> /etc/ansible/auto_discovery_stage.tf
         sudo echo "${file(var.prod-discovery-script)}" >> /etc/ansible/auto_discovery_prod.tf
         sudo echo "${var.private_key}" >> /home/ec2-user/.ssh/id_rsa
-        sudo bash -c 'echo "NEXUS_IP:${var.nexus-ip}:8085" > /etc/ansible/ansible_vars_file.yaml'
+        sudo bash -c 'echo "NEXUS_IP:${var.nexus-ip}:8085" > /etc/ansible/ansible_vars_file.yml'
 
         # Setting permissions for the copied files
         sudo chown -R ec2-user:ec2-user /etc/ansible
@@ -75,7 +75,7 @@ locals {
     # Function to set the hostname
     set_hostname() {
         echo "Setting hostname..."
-        sudo hostnamectl set-hostname ansible-server
+        sudo hostnamectl set-hostname ansible
     }
 
     # Main function to orchestrate script execution
