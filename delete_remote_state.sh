@@ -3,8 +3,8 @@
 
 
 # Set variables
-BUCKET_NAME="pet-auto-remote-tf"
-DYNAMODB_TABLE_NAME="pet-auto-dynamodb"
+BUCKET_NAME="pet-auto-remote-tfstate"
+DYNAMODB_TABLE_NAME="pet-auto-dynamodb-tfstate"
 REGION="eu-west-1"
 
 # Delete all objects from the S3 bucket

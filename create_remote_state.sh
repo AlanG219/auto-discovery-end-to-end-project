@@ -3,15 +3,15 @@
 
 
 # Set variables
-BUCKET_NAME="pet-auto-remote-tf"
-DYNAMODB_TABLE_NAME="pet-auto-dynamodb"
+BUCKET_NAME="pet-auto-remote-tfstate"
+DYNAMODB_TABLE_NAME="pet-auto-dynamodb-tfstate"
 REGION="eu-west-1"
 
 # Create S3 bucket
 aws s3api create-bucket --bucket $BUCKET_NAME --region $REGION --create-bucket-configuration LocationConstraint=$REGION
 
 # Tag the S3 bucket
-aws s3api put-bucket-tagging --bucket $BUCKET_NAME --tagging 'TagSet=[{Key=Name,Value=pet-auto-remote-tf}]'
+aws s3api put-bucket-tagging --bucket $BUCKET_NAME --tagging 'TagSet=[{Key=Name,Value=pet-auto-remote-tfstate}]'
 
 # Create DynamoDB table
 aws dynamodb create-table \
