@@ -1,0 +1,11 @@
+variable "ami" {}
+variable "asg-sg" {}
+variable "pub-key" {}
+variable "nexus-ip" {}
+variable "newrelic-user-licence" {}
+variable "newrelic-acct-id" {}
+variable "vpc-zone-identifier" {}
+variable "policy-name" {}
+variable "tg-arn" {}
+variable "newrelic-region" {}
+variable "name" {}

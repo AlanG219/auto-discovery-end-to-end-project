@@ -95,3 +95,51 @@ module "ansible" {
   newrelic-license-key = "NRAK-RIPYJAFBUGD6OB6W2RANMN3MYSQ"
   newrelic-acct-id = "4466696"  
 }
+
+module "prod-lb" {
+  source = "./module/prod_lb"
+  name = "${local.name}_prod_alb"  
+  prod-sg = module.securitygroup.asg-sg
+  subnet = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
+  cert-arn = data.aws_acm_certificate.acm-cert.arn
+  vpc_id = module.vpc.vpc_id
+}
+
+module "stage-lb" {
+  source = "./module/stage_lb"
+  name = "${local.name}_stage_alb"  
+  stage-sg = module.securitygroup.asg-sg
+  subnet = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
+  cert-arn = data.aws_acm_certificate.acm-cert.arn
+  vpc_id = module.vpc.vpc_id
+}
+
+module "prod_asg" {
+  source                = "./module/prod_asg"
+  ami                   = "ami-07d4917b6f95f5c2a"
+  asg-sg                = module.securitygroup.asg-sg
+  pub-key               = module.keypair.pub_keypair_id
+  nexus-ip              = module.nexus.nexus_ip
+  newrelic-user-licence = "NRAK-RIPYJAFBUGD6OB6W2RANMN3MYSQ"
+  newrelic-acct-id      = "4466696"
+  vpc-zone-identifier   = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
+  policy-name  = "prod-asg-policy"
+  tg-arn                = module.prod_lb.tg_prod_arn
+  name         = "${local.name}_prod_asg"
+  newrelic-region       = "US"
+}
+
+module "stage_asg" {
+  source                = "./module/stage_asg"
+  ami                   = "ami-07d4917b6f95f5c2a"
+  asg-sg                = module.securitygroup.asg-sg
+  pub-key               = module.keypair.pub_keypair_id
+  nexus-ip              = module.nexus.nexus_ip
+  newrelic-user-licence = "NRAK-RIPYJAFBUGD6OB6W2RANMN3MYSQ"
+  newrelic-acct-id      = "4466696"
+  vpc-zone-identifier   = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
+  policy-name  = "stage-asg-policy"
+  tg-arn                = module.stage_lb.tg_stage_arn
+  name         = "${local.name}_stage_asg"
+  newrelic-region       = "US"
+}
