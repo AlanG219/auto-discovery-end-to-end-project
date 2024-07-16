@@ -1,10 +1,10 @@
 # Run each of the below commands to destroy s3 and dynamodb table via aws cli
-# Can be run on terminal or by pasting into file and running file with sh command
+# Run lines individually on terminal or by running "sh delete_remote_state.sh" command
 
 
 # Set variables
-BUCKET_NAME="pet_auto_remote_tf"
-DYNAMODB_TABLE_NAME="pet_auto_dynamodb"
+BUCKET_NAME="pet-auto-remote-tf"
+DYNAMODB_TABLE_NAME="pet-auto-dynamodb"
 REGION="eu-west-1"
 
 # Delete all objects from the S3 bucket
