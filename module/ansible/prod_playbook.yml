@@ -1,0 +1,33 @@
+---
+- hosts: webservers
+  become: true
+  vars_files:
+    - ansible_vars_file.yml
+  tasks:
+    - name: Stop any running appContainer
+      command: docker stop appContainer
+      ignore_errors: true
+
+    - name: Remove stopped appContainer
+      command: docker rm appContainer
+      ignore_errors: true
+
+    - name: Remove Docker image from Nexus
+      command: docker rmi "{{ NEXUS_IP }}/petclinicapps"
+      ignore_errors: true
+
+    - name: Log in to Nexus Docker registry
+      shell: docker login --username=admin --password=admin123 {{ NEXUS_IP }}
+      args:
+        executable: /bin/bash
+        warn: false
+
+    - name: Pull Docker image from Nexus
+      shell: docker pull "{{ NEXUS_IP }}/petclinicapps"
+      args:
+        executable: /bin/bash
+
+    - name: Run Docker container from pulled image
+      shell: docker run -it -d --name appContainer -p 8080:8080 "{{ NEXUS_IP }}/petclinicapps"
+      args:
+        executable: /bin/bash
