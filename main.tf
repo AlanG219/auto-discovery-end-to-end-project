@@ -63,6 +63,8 @@ module "sonarqube" {
   key_name              = module.keypair.pub_keypair_id
   sonarqube-sg          = module.security_groups.sonarqube-sg
   subnet_id             = module.vpc.pubsn1_id
+  subnet-elb = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
+  cert-arn = data.aws_acm_certificate.acm-cert.arn
 }
 
 module "nexus" {
@@ -169,4 +171,24 @@ module "stage_asg" {
   tg-arn                = module.stage_lb.tg_stage_arn
   name         = "${local.name}_stage_asg"
   newrelic-region       = "US"
+}
+
+module "route53" {
+  source    = "./module/route53"
+  domain_name  ="ticktocktv.com"
+  jenkins_domain_name  = "jenkins.ticktocktv.com"
+  jenkins_lb_dns_name  = module.jenkins.jenkins_lb_dns
+  jenkins_lb_zone_id   = module.jenkins.jenkins_lb_zoneid
+  nexus_domain_name  = "nexus.ticktocktv.com"
+  nexus_lb_dns_name  = module.nexus.nexus_dns_name
+  nexus_lb_zone_id   = module.nexus.nexus_zone_id
+  sonarqube_domain_name  = "sonarqube.ticktocktv.com"
+  sonarqube_lb_dns_name  = module.sonarqube.sonarqube_dns_name
+  sonarqube_lb_zone_id   = module.sonarqube.sonarqube_zone_id
+  prod_domain_name  = "prod.ticktocktv.com"
+  prod_lb_dns_name  = module.prod-lb.alb_prod_dns
+  prod_lb_zone_id   = module.prod-lb.alb_prod_zoneid
+  stage_domain_name  = "stage.ticktocktv.com"
+  stage_lb_dns_name  = module.stage-lb.alb_stage_dns
+  stage_lb_zone_id   = module.stage-lb.alb_stage_zoneid
 }
