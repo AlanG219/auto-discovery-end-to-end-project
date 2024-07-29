@@ -12,7 +12,7 @@ resource "aws_instance" "jenkins" {
 }
 
 resource "aws_lb" "jenkins_lb" {
-  name                       = "jenkins_lb"
+  name                       = "jenkins-lb"
   internal                   = false
   load_balancer_type         = "application"
   security_groups            = [var.jenkins-sg]
@@ -26,7 +26,7 @@ resource "aws_lb" "jenkins_lb" {
 
 # Creating Load Balancer Target Group for Jenkins
 resource "aws_lb_target_group" "jenkins_lb_tg" {
-  name     = "jenkins_lb_tg"
+  name     = "jenkins-lb-tg"
   port     = 8080
   protocol = "HTTP"
   vpc_id   = var.vpc_id

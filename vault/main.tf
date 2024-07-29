@@ -105,15 +105,14 @@ resource "aws_security_group" "vault_sg" {
   }
 }
 
-# Fetch the Route 53 hosted zone for the domain
-data "aws_route53_zone" "route53_zone" {
-  name         = "ticktocktv.com"
-  private_zone = false
+# Create the route53 hosted zone
+resource "aws_route53_zone" "ticktocktv" {
+  name = "ticktocktv.com"
 }
 
 # Create a Route 53 DNS record for the Vault server
 resource "aws_route53_record" "vault_record" {
-  zone_id = data.aws_route53_zone.route53_zone.zone_id
+  zone_id = aws_route53_zone.ticktocktv.zone_id
   name    = "vault.ticktocktv.com"
   type    = "A"
   alias {
@@ -155,7 +154,7 @@ resource "aws_route53_record" "cert_record" {
   records         = [each.value.record]
   ttl             = 60
   type            = each.value.type
-  zone_id         = data.aws_route53_zone.route53_zone.zone_id
+  zone_id         = aws_route53_zone.ticktocktv.zone_id
 }
 
 # Define an Elastic Load Balancer (ELB) for the Vault server

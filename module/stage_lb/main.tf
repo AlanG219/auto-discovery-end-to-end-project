@@ -14,7 +14,7 @@ resource "aws_lb" "stage_lb" {
 
 # Creating Load Balancer Target Group for ASG stage
 resource "aws_lb_target_group" "lb_tg_stage" {
-  name     = "lb_tg_stage"
+  name     = "lb-tg-stage"
   port     = 8080
   protocol = "HTTP"
   vpc_id   = var.vpc_id
