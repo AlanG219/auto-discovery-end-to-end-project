@@ -115,9 +115,9 @@ module "ansible" {
   newrelic-acct-id       = "4466696"
 }
 
-data "vault_generic_secret" "vault_secret" {
-  path = "secret/database"
-}
+# data "vault_generic_secret" "vault_secret" {
+#   path = "secret/database"
+# }
 
 module "rds" {
   source        = "./module/rds"
@@ -125,8 +125,8 @@ module "rds" {
   rds_subnet_id = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
   db_subtag     = "${local.name}_db_subgroup"
   db_name       = "petclinic"
-  db_username   = data.vault_generic_secret.vault_secret.data["username"]
-  db_password   = data.vault_generic_secret.vault_secret.data["password"]
+  db_username   = "admin"#data.vault_generic_secret.vault_secret.data["username"]
+  db_password   = "admin123"#data.vault_generic_secret.vault_secret.data["password"]
   rds_sg        = [module.security_groups.rds-sg]
 }
 

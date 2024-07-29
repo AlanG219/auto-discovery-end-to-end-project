@@ -1,10 +1,10 @@
-data "aws_route53_zone" "route53_zone" {
+data "aws_route53_zone" "ticktocktv" {
   name         = var.domain_name
   private_zone = false
 }
 
 resource "aws_route53_record" "jenkins_record" {
-  zone_id = data.aws_route53_zone.route53_zone.zone_id
+  zone_id = data.aws_route53_zone.ticktocktv.zone_id
   name    = var.jenkins_domain_name
   type    = "A"
   alias {
@@ -15,7 +15,7 @@ resource "aws_route53_record" "jenkins_record" {
 }
 
 resource "aws_route53_record" "nexus_record" {
-  zone_id = data.aws_route53_zone.route53_zone.zone_id
+  zone_id = data.aws_route53_zone.ticktocktv.zone_id
   name    = var.nexus_domain_name
   type    = "A"
   alias {
@@ -26,7 +26,7 @@ resource "aws_route53_record" "nexus_record" {
 }
 
 resource "aws_route53_record" "sonarqube_record" {
-  zone_id = data.aws_route53_zone.route53_zone.zone_id
+  zone_id = data.aws_route53_zone.ticktocktv.zone_id
   name    = var.sonarqube_domain_name
   type    = "A"
   alias {
@@ -37,7 +37,7 @@ resource "aws_route53_record" "sonarqube_record" {
 }
 
 resource "aws_route53_record" "prod_record" {
-  zone_id = data.aws_route53_zone.route53_zone.zone_id
+  zone_id = data.aws_route53_zone.ticktocktv.zone_id
   name    = var.prod_domain_name
   type    = "A"
   alias {
@@ -48,7 +48,7 @@ resource "aws_route53_record" "prod_record" {
 }
 
 resource "aws_route53_record" "stage_record" {
-  zone_id = data.aws_route53_zone.route53_zone.zone_id
+  zone_id = data.aws_route53_zone.ticktocktv.zone_id
   name    = var.stage_domain_name
   type    = "A"
   alias {
