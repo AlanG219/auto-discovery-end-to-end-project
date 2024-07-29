@@ -5,8 +5,8 @@ sudo apt-get update -y
 sudo apt-get install -y unzip wget jq
 
 # Download and install Consul
-wget https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
-unzip consul_${CONSUL_VERSION}_linux_amd64.zip
+wget https://releases.hashicorp.com/consul/"${CONSUL_VERSION}"/consul_"${CONSUL_VERSION}"_linux_amd64.zip
+unzip consul_"${CONSUL_VERSION}"_linux_amd64.zip
 sudo mv consul /usr/bin/
 
 # Create a Consul systemd service
@@ -16,7 +16,7 @@ Description=Consul
 Documentation=https://www.consul.io/
 
 [Service]
-ExecStart=/usr/bin/consul agent -server -ui -data-dir=/tmp/consul -bootstrap-expect=1 -node=vault -bind=\$(hostname -i) -config-dir=/etc/consul.d/
+ExecStart=/usr/bin/consul agent -server -ui -data-dir=/tmp/consul -bootstrap-expect=1 -node=vault -bind="$CONSUL_BIND_IP" -config-dir=/etc/consul.d/
 ExecReload=/bin/kill -HUP \$MAINPID
 LimitNOFILE=65536
 
@@ -40,8 +40,8 @@ sudo systemctl start consul
 sudo systemctl enable consul
 
 # Download and install Vault
-wget https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip
-unzip vault_${VAULT_VERSION}_linux_amd64.zip
+wget https://releases.hashicorp.com/vault/"${VAULT_VERSION}"/vault_"${VAULT_VERSION}"_linux_amd64.zip
+unzip vault_"${VAULT_VERSION}"_linux_amd64.zip
 sudo mv vault /usr/bin/
 
 # Create Vault configuration file

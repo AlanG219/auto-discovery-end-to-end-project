@@ -36,6 +36,7 @@ resource "aws_instance" "vault_server" {
     keypair = tls_private_key.keypair.private_key_pem
     CONSUL_VERSION = "1.7.3"
     VAULT_VERSION = "1.5.0"
+    CONSUL_BIND_IP="$(hostname -i)"
   })
 
   # Provisioner to clean up the root token file on destruction
