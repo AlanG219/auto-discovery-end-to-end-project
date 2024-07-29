@@ -5,11 +5,11 @@ locals {
 }
 
 # Data source to fetch the most recent ACM certificate for the domain
-data "aws_acm_certificate" "acm_cert" {
-  domain      = "ticktocktv.com"
-  types       = ["AMAZON_ISSUED"]
-  most_recent = true
-}
+# data "aws_acm_certificate" "certificate" {
+#   domain      = "ticktocktv.com"
+#   types       = ["AMAZON_ISSUED"]
+#   most_recent = true
+# }
 
 module "vpc" {
   source = "./module/vpc"
@@ -180,7 +180,8 @@ module "stage_asg" {
 
 module "route53" {
   source                = "./module/route53"
-  domain_name           = "ticktocktv.com"
+  domain_name1          = "ticktocktv.com"
+  domain_name2          = "*.ticktocktv.com"
   jenkins_domain_name   = "jenkins.ticktocktv.com"
   jenkins_lb_dns_name   = module.jenkins.jenkins_lb_dns
   jenkins_lb_zone_id    = module.jenkins.jenkins_lb_zoneid
