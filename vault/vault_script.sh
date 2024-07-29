@@ -5,7 +5,6 @@ sudo apt-get update -y
 sudo apt-get install -y unzip wget jq
 
 # Download and install Consul
-CONSUL_VERSION="1.7.3"
 wget https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
 unzip consul_${CONSUL_VERSION}_linux_amd64.zip
 sudo mv consul /usr/bin/
@@ -41,7 +40,6 @@ sudo systemctl start consul
 sudo systemctl enable consul
 
 # Download and install Vault
-VAULT_VERSION="1.5.0"
 wget https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip
 unzip vault_${VAULT_VERSION}_linux_amd64.zip
 sudo mv vault /usr/bin/
@@ -60,8 +58,8 @@ listener "tcp" {
 }
 
 seal "awskms" {
-    region     = "${var1}"
-    kms_key_id = "${var2}"
+    region     = "eu-west-1"
+    kms_key_id = "${kms_key}"
 }
 
 ui = true

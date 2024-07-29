@@ -34,6 +34,8 @@ resource "aws_instance" "vault_server" {
   user_data = templatefile("./vault_script.sh", {
     kms_key = aws_kms_key.vault.id
     keypair = tls_private_key.keypair.private_key_pem
+    CONSUL_VERSION = "1.7.3"
+    VAULT_VERSION = "1.5.0"
   })
 
   # Provisioner to clean up the root token file on destruction
