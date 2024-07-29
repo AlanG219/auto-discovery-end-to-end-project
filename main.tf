@@ -115,6 +115,10 @@ module "ansible" {
   newrelic-acct-id       = "4466696"
 }
 
+data "vault_generic_secret" "vault_secret" {
+  path = "secret/database"
+}
+
 module "rds" {
   source        = "./module/rds"
   rds_subgroup  = "rds_subgroup"
