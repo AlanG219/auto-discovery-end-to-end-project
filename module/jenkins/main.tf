@@ -1,16 +1,16 @@
-resource  "aws_instance" "jenkins" {
-  ami                         = var.ami-redhat
-  instance_type               = "t3.medium"
-  subnet_id                   = var.subnet-id
-  vpc_security_group_ids      = [var.jenkins-sg]
-  key_name                    = var.key-name 
-  user_data                   = local.jenkins_script
+resource "aws_instance" "jenkins" {
+  ami                    = var.ami-redhat
+  instance_type          = "t3.medium"
+  subnet_id              = var.subnet-id
+  vpc_security_group_ids = [var.jenkins-sg]
+  key_name               = var.key-name
+  user_data              = local.jenkins_script
 
   tags = {
     Name = var.jenkins-name
   }
 }
-  
+
 resource "aws_lb" "jenkins_lb" {
   name                       = "jenkins_lb"
   internal                   = false

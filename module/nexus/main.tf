@@ -6,7 +6,7 @@ resource "aws_instance" "nexus" {
   subnet_id                   = var.nexus_subnet
   key_name                    = var.pub_key
   vpc_security_group_ids      = [var.nexus_sg]
-  user_data = local.nexus_user_data
+  user_data                   = local.nexus_user_data
   tags = {
     Name = var.nexus_name
   }
@@ -14,7 +14,7 @@ resource "aws_instance" "nexus" {
 
 resource "aws_elb" "nexus_lb" {
   name            = "nexus-lb"
-  subnets         = var.subnet-elb 
+  subnets         = var.subnet-elb
   security_groups = [var.nexus_sg]
   listener {
     instance_port      = 8081
@@ -32,13 +32,13 @@ resource "aws_elb" "nexus_lb" {
     interval            = 30
   }
 
-    instances                   = [aws_instance.nexus.id]
-    cross_zone_load_balancing   = true
-    idle_timeout                = 400
-    connection_draining         = true
-    connection_draining_timeout = 400
+  instances                   = [aws_instance.nexus.id]
+  cross_zone_load_balancing   = true
+  idle_timeout                = 400
+  connection_draining         = true
+  connection_draining_timeout = 400
 
-    tags = {
-      Name = "nexus-elb"
+  tags = {
+    Name = "nexus-elb"
   }
 }

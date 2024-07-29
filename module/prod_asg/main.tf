@@ -5,10 +5,10 @@ resource "aws_launch_template" "prod_lt" {
   vpc_security_group_ids = [var.asg-sg]
   key_name               = var.pub-key
   user_data = base64encode(templatefile("./module/prod_asg/docker_script.sh", {
-    nexus-ip = var.nexus-ip,
+    nexus-ip             = var.nexus-ip,
     newrelic-license-key = var.newrelic-user-licence,
-    newrelic-account-id = var.newrelic-acct-id,
-    newrelic-region = var.newrelic-region
+    newrelic-account-id  = var.newrelic-acct-id,
+    newrelic-region      = var.newrelic-region
 
   }))
 }
@@ -23,9 +23,9 @@ resource "aws_autoscaling_group" "prod_asg" {
   health_check_type         = "EC2"
   force_delete              = true
   vpc_zone_identifier       = var.vpc-zone-identifier
-  target_group_arns         = [var.tg-arn] 
+  target_group_arns         = [var.tg-arn]
   launch_template {
-    id      = aws_launch_template.prod_lt.id
+    id = aws_launch_template.prod_lt.id
   }
   tag {
     key                 = "Name"

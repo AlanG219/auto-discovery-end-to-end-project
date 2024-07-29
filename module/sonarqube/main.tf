@@ -1,4 +1,4 @@
-resource  "aws_instance" "sonarqube" {
+resource "aws_instance" "sonarqube" {
   ami                         = var.ami
   instance_type               = var.instance_type
   key_name                    = var.key_name
@@ -13,7 +13,7 @@ resource  "aws_instance" "sonarqube" {
 
 resource "aws_elb" "sonarqube_lb" {
   name            = "sonarqube-lb"
-  subnets         = var.subnet-elb 
+  subnets         = var.subnet-elb
   security_groups = [var.sonarqube-sg]
   listener {
     instance_port      = 9000
@@ -31,13 +31,13 @@ resource "aws_elb" "sonarqube_lb" {
     interval            = 30
   }
 
-    instances                   = [aws_instance.sonarqube.id]
-    cross_zone_load_balancing   = true
-    idle_timeout                = 400
-    connection_draining         = true
-    connection_draining_timeout = 400
+  instances                   = [aws_instance.sonarqube.id]
+  cross_zone_load_balancing   = true
+  idle_timeout                = 400
+  connection_draining         = true
+  connection_draining_timeout = 400
 
-    tags = {
-      Name = "sonarqube-elb"
+  tags = {
+    Name = "sonarqube-elb"
   }
 }

@@ -7,7 +7,7 @@ output "alb_prod_arn" {
 }
 
 output "alb_prod_zoneid" {
-  value = aws_lb.prod_lb.zone_id 
+  value = aws_lb.prod_lb.zone_id
 }
 
 output "tg_prod_arn" {
