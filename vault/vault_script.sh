@@ -82,7 +82,6 @@ EOT
 
 # Reload systemd, start, and enable Vault service
 sudo systemctl daemon-reload
-sudo systemctl restart consul
 sudo systemctl start vault
 sudo systemctl enable vault
 
