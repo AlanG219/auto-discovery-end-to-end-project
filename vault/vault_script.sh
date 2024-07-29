@@ -16,7 +16,7 @@ Description=Consul
 Documentation=https://www.consul.io/
 
 [Service]
-ExecStart=/usr/bin/consul agent -server -ui -data-dir=/tmp/consul -bootstrap-expect=1 -node=vault -bind="$CONSUL_BIND_IP" -config-dir=/etc/consul.d/
+ExecStart=/usr/bin/consul agent -server -ui -data-dir=/tmp/consul -bootstrap-expect=1 -node=vault -bind=\"${CONSUL_BIND_IP}" -config-dir=/etc/consul.d/
 ExecReload=/bin/kill -HUP \$MAINPID
 LimitNOFILE=65536
 
