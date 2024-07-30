@@ -108,9 +108,20 @@ resource "aws_security_group" "vault_sg" {
   }
 }
 
-# Create the Route 53 hosted zone
-resource "aws_route53_zone" "ticktocktv" {
-  name = "ticktocktv.com"
+data "aws_route53_zone" "ticktocktv" {
+  name              = "ticktocktv.com"
+  private_zone =  false
+}
+
+resource "aws_route53_record" "vault_record" {
+  zone_id = data.aws_route53_zone.ticktocktv.zone_id
+  name    = "vault.ticktocktv.com"
+  type    = "A"
+  alias  {
+    name       =   aws_elb.vault_lb.dns_name
+    zone_id    =   aws_elb.vault_lb.zone_id
+    evaluate_target_health = true
+  }
 }
 
 # Create an ACM certificate
@@ -118,6 +129,9 @@ resource "aws_acm_certificate" "acm_cert" {
   domain_name               = "ticktocktv.com"
   subject_alternative_names = ["*.ticktocktv.com"]
   validation_method         = "DNS"
+  lifecycle {
+    create_before_destroy = true
+  }  
 }
 
 # Create Route 53 record for domain validation
@@ -127,7 +141,7 @@ resource "aws_route53_record" "validation-record" {
       name    = dvo.resource_record_name
       value   = dvo.resource_record_value
       type    = dvo.resource_record_type
-      zone_id = aws_route53_zone.ticktocktv.zone_id
+      zone_id = data.aws_route53_zone.ticktocktv.zone_id
     }
   }
   allow_overwrite = true
