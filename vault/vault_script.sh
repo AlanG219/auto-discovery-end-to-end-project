@@ -16,7 +16,7 @@ Description=Consul
 Documentation=https://www.consul.io/
 
 [Service]
-ExecStart=/usr/bin/consul agent -server -ui -data-dir=/tmp/consul -bootstrap-expect=1 -node=vault -bind=\"${CONSUL_BIND_IP}" -config-dir=/etc/consul.d/
+ExecStart=/usr/bin/consul agent -server -ui -data-dir=/tmp/consul -bootstrap-expect=1 -node=vault -bind=${CONSUL_BIND_IP} -config-dir=/etc/consul.d/
 ExecReload=/bin/kill -HUP \$MAINPID
 LimitNOFILE=65536
 
@@ -85,19 +85,41 @@ sudo systemctl daemon-reload
 sudo systemctl start vault
 sudo systemctl enable vault
 
+# Sleep for a while to allow Vault to fully start
+sleep 20
+
 # Set environment variables for Vault
 export VAULT_ADDR="http://localhost:8200"
-cat <<EOT | sudo tee /etc/profile.d/vault.sh
-export VAULT_ADDR="http://localhost:8200"
 export VAULT_SKIP_VERIFY=true
-EOT
 
 # Enable Vault autocomplete
 vault -autocomplete-install
 complete -C /usr/bin/vault vault
 
-# Notify once provisioned
-echo "Vault server provisioned successfully."
+# Initialize Vault and capture the output in JSON format
+init_output=$(vault operator init -format=json)
+
+# Extract the root token from the initialization output
+root_token=$(echo $init_output | jq -r '.root_token')
+
+# Save the root token to a file on the remote server (optional)
+echo $root_token > /home/ubuntu/root_token.txt
+
+# Log in to Vault using the root token
+vault login $root_token
+
+# Enable the KV secrets engine at the specified path
+vault secrets enable -path=secret/ kv
+
+# Generate a random password using OpenSSL
+random_password=$(openssl rand -base64 16)
+
+# Store the username and random password in the KV secrets engine
+vault kv put secret/database username=admin password=$random_password
+
+# Print confirmation messages
+echo "Vault setup completed successfully with a random password."
+echo "Generated random password: $random_password"
 
 # Set hostname to Vault
 sudo hostnamectl set-hostname Vault
@@ -107,48 +129,5 @@ echo "${keypair}" | sudo tee /home/ubuntu/.ssh/id_rsa > /dev/null
 sudo chmod 400 /home/ubuntu/.ssh/id_rsa
 sudo chown ubuntu:ubuntu /home/ubuntu/.ssh/id_rsa
 
-# Install jq for JSON processing
-sudo apt-get install -y jq
-
-# Create the Vault setup script
-cat <<'EOT' | sudo tee /home/ubuntu/vault_setup.sh > /dev/null
-#!/bin/bash
-
-# Function to generate a random password
-generate_random_password() {
-    openssl rand -base64 16
-}
-
-# Function to run Vault commands
-run_vault_commands() {
-    # Initialize Vault
-    init_output=$(vault operator init -format=json)
-
-    # Capture the root token
-    root_token=$(echo $init_output | jq -r '.root_token')
-
-    # Save the root token to a file (optional, for reference)
-    echo $root_token > /home/ubuntu/root_token.txt
-
-    # Log in to Vault using the root token
-    vault login $root_token
-
-    # Enable KV secrets engine at the specified path
-    vault secrets enable -path=secret/ kv
-
-    # Generate a random password
-    random_password=$(generate_random_password)
-
-    # Store username and random password in the KV secrets engine
-    vault kv put secret/database username=admin password=$random_password
-
-    echo "Vault setup completed successfully with a random password."
-    echo "Generated random password: $random_password"
-}
-
-# Run the function to execute the Vault commands
-run_vault_commands
-EOT
-
-sudo chmod +x /home/ubuntu/vault_setup.sh
-sudo chown ubuntu:ubuntu /home/ubuntu/vault_setup.sh
+# Notify once provisioned
+echo "Vault server provisioned successfully."
