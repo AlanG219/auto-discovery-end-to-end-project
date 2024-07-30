@@ -13,8 +13,8 @@ data "aws_acm_certificate" "acm_cert" {
 
 module "vpc" {
   source = "./module/vpc"
-  avz1   = "eu-west-1a"
-  avz2   = "eu-west-1b"
+  avz1   = "eu-west-1b"
+  avz2   = "eu-west-1c"
   vpc    = "${local.name}_vpc"
   igw    = "${local.name}_igw"
   ngw    = "${local.name}_ngw"

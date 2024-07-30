@@ -1,0 +1,2 @@
+$ export VAULT_ADDR="https://vault.ticktocktv.com"
+$ export VAULT_TOKEN="s.TEoAOWjsEoQObBxi5erxkm1E"

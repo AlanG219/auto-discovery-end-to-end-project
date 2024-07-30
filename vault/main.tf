@@ -32,10 +32,10 @@ resource "aws_instance" "vault_server" {
 
   # Use a user data script to initialize Vault on launch
   user_data = templatefile("./vault_script.sh", {
-    kms_key = aws_kms_key.vault.id
-    keypair = tls_private_key.keypair.private_key_pem
+    kms_key        = aws_kms_key.vault.id
+    keypair        = tls_private_key.keypair.private_key_pem
     CONSUL_VERSION = "1.7.3"
-    VAULT_VERSION = "1.5.0"
+    VAULT_VERSION  = "1.5.0"
     CONSUL_BIND_IP = "0.0.0.0"
   })
 
@@ -109,17 +109,17 @@ resource "aws_security_group" "vault_sg" {
 }
 
 data "aws_route53_zone" "ticktocktv" {
-  name              = "ticktocktv.com"
-  private_zone =  false
+  name         = "ticktocktv.com"
+  private_zone = false
 }
 
 resource "aws_route53_record" "vault_record" {
   zone_id = data.aws_route53_zone.ticktocktv.zone_id
   name    = "vault.ticktocktv.com"
   type    = "A"
-  alias  {
-    name       =   aws_elb.vault_lb.dns_name
-    zone_id    =   aws_elb.vault_lb.zone_id
+  alias {
+    name                   = aws_elb.vault_lb.dns_name
+    zone_id                = aws_elb.vault_lb.zone_id
     evaluate_target_health = true
   }
 }
@@ -131,7 +131,7 @@ resource "aws_acm_certificate" "acm_cert" {
   validation_method         = "DNS"
   lifecycle {
     create_before_destroy = true
-  }  
+  }
 }
 
 # Create Route 53 record for domain validation
@@ -160,9 +160,14 @@ resource "aws_acm_certificate_validation" "cert-validation" {
 
 # Define an Elastic Load Balancer (ELB) for the Vault server
 resource "aws_elb" "vault_lb" {
-  name               = "vault-lb"
-  availability_zones = ["eu-west-1a", "eu-west-1b"]
-  security_groups    = [aws_security_group.vault_sg.id]
+  name                        = "vault-lb"
+  availability_zones          = ["eu-west-1b", "eu-west-1c"]
+  security_groups             = [aws_security_group.vault_sg.id]
+  instances                   = [aws_instance.vault_server.id]
+  cross_zone_load_balancing   = true
+  idle_timeout                = 400
+  connection_draining         = true
+  connection_draining_timeout = 400
 
   # Configure the load balancer listener
   listener {
@@ -181,12 +186,6 @@ resource "aws_elb" "vault_lb" {
     target              = "TCP:8200"
     interval            = 30
   }
-
-  instances                   = [aws_instance.vault_server.id]
-  cross_zone_load_balancing   = true
-  idle_timeout                = 400
-  connection_draining         = true
-  connection_draining_timeout = 400
 
   tags = {
     Name = "vault-elb"

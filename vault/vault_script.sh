@@ -111,18 +111,28 @@ vault login $root_token
 # Enable the KV secrets engine at the specified path
 vault secrets enable -path=secret/ kv
 
-# Function to generate a random password
+# Function to generate a random password without forbidden characters
 generate_random_password() {
-    # Generate a random password using OpenSSL that excludes forbidden characters
-    openssl rand -base64 16 | tr -dc 'A-Za-z0-9~!#$%^&*()-_=+[]{}|;:,.<>?'
+    # Define the allowed characters
+    local allowed_chars='A-Za-z0-9~!#$%^&*()-_=+[]{}|;:,.<>?'
+    # Generate a random password of 16 characters
+    < /dev/urandom tr -dc "$allowed_chars" | head -c 16
 }
 
+# Generate the password and store it in a variable
+random_password=$(generate_random_password)
+
 # Store the username and random password in the KV secrets engine
-vault kv put secret/database username=admin password=$random_password
+vault kv put secret/database username=admin password="$random_password"
 
 # Print confirmation messages
 echo "Vault setup completed successfully with a random password."
 echo "Generated random password: $random_password"
+
+# Optionally, log the output to a file (for easier debugging)
+LOGFILE="/var/log/vault_setup.log"
+echo "Vault setup completed successfully with a random password." >> $LOGFILE
+echo "Generated random password: $random_password" >> $LOGFILE
 
 # Set hostname to Vault
 sudo hostnamectl set-hostname Vault
