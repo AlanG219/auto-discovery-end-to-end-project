@@ -111,8 +111,11 @@ vault login $root_token
 # Enable the KV secrets engine at the specified path
 vault secrets enable -path=secret/ kv
 
-# Generate a random password using OpenSSL
-random_password=$(openssl rand -base64 16)
+# Function to generate a random password
+generate_random_password() {
+    # Generate a random password using OpenSSL that excludes forbidden characters
+    openssl rand -base64 16 | tr -dc 'A-Za-z0-9~!#$%^&*()-_=+[]{}|;:,.<>?'
+}
 
 # Store the username and random password in the KV secrets engine
 vault kv put secret/database username=admin password=$random_password

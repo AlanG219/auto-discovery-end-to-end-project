@@ -108,56 +108,40 @@ resource "aws_security_group" "vault_sg" {
   }
 }
 
-# Create the route53 hosted zone
+# Create the Route 53 hosted zone
 resource "aws_route53_zone" "ticktocktv" {
   name = "ticktocktv.com"
 }
 
-# Create a Route 53 DNS record for the Vault server
-resource "aws_route53_record" "vault_record" {
-  zone_id = aws_route53_zone.ticktocktv.zone_id
-  name    = "vault.ticktocktv.com"
-  type    = "A"
-  alias {
-    name                   = aws_elb.vault_lb.dns_name
-    zone_id                = aws_elb.vault_lb.zone_id
-    evaluate_target_health = true
-  }
-}
-
-# Request an ACM certificate for the domain and subdomains
+# Create an ACM certificate
 resource "aws_acm_certificate" "acm_cert" {
   domain_name               = "ticktocktv.com"
   subject_alternative_names = ["*.ticktocktv.com"]
   validation_method         = "DNS"
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
-# Validate the ACM certificate by creating DNS records
-resource "aws_acm_certificate_validation" "valid_acm_cert" {
-  certificate_arn         = aws_acm_certificate.acm_cert.arn
-  validation_record_fqdns = [for record in aws_route53_record.cert_record : record.fqdn]
-}
-
-# Create DNS records for ACM certificate validation
-resource "aws_route53_record" "cert_record" {
+# Create Route 53 record for domain validation
+resource "aws_route53_record" "validation-record" {
   for_each = {
-    for option in aws_acm_certificate.acm_cert.domain_validation_options : option.domain_name => {
-      name   = option.resource_record_name
-      record = option.resource_record_value
-      type   = option.resource_record_type
+    for dvo in aws_acm_certificate.acm_cert.domain_validation_options : dvo.domain_name => {
+      name    = dvo.resource_record_name
+      value   = dvo.resource_record_value
+      type    = dvo.resource_record_type
+      zone_id = aws_route53_zone.ticktocktv.zone_id
     }
   }
-
   allow_overwrite = true
   name            = each.value.name
-  records         = [each.value.record]
-  ttl             = 60
+  records         = [each.value.value]
   type            = each.value.type
-  zone_id         = aws_route53_zone.ticktocktv.zone_id
+  ttl             = 60
+  zone_id         = each.value.zone_id
+}
+
+# Validate the ACM certificate
+resource "aws_acm_certificate_validation" "cert-validation" {
+  certificate_arn         = aws_acm_certificate.acm_cert.arn
+  validation_record_fqdns = [for record in aws_route53_record.validation-record : record.fqdn]
 }
 
 # Define an Elastic Load Balancer (ELB) for the Vault server
