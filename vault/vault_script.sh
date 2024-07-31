@@ -102,7 +102,7 @@ init_output=$(vault operator init -format=json)
 # Extract the root token from the initialization output
 root_token=$(echo $init_output | jq -r '.root_token')
 
-# Save the root token to a file on the remote server (optional)
+# Save the root token to a file on the remote server
 echo $root_token > /home/ubuntu/root_token.txt
 
 # Log in to Vault using the root token
@@ -129,7 +129,7 @@ vault kv put secret/database username=admin password="$random_password"
 echo "Vault setup completed successfully with a random password."
 echo "Generated random password: $random_password"
 
-# Optionally, log the output to a file (for easier debugging)
+# Log the output to a file (for easier debugging)
 LOGFILE="/var/log/vault_setup.log"
 echo "Vault setup completed successfully with a random password." >> $LOGFILE
 echo "Generated random password: $random_password" >> $LOGFILE
