@@ -113,8 +113,8 @@ vault secrets enable -path=secret/ kv
 
 # Function to generate a random password without forbidden characters
 generate_random_password() {
-    # Define the allowed characters
-    local allowed_chars='A-Za-z0-9~!#$%^&*()-_=+[]{}|;:,.<>?'
+    # Define the allowed characters, note the brackets around the character set
+    local allowed_chars='[A-Za-z0-9~!#$%^&*()-_=+[]{}|;:,.<>?]'
     # Generate a random password of 16 characters
     < /dev/urandom tr -dc "$allowed_chars" | head -c 16
 }
