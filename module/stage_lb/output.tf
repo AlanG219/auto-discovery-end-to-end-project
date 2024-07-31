@@ -7,7 +7,7 @@ output "alb_stage_arn" {
 }
 
 output "alb_stage_zoneid" {
-  value = aws_lb.stage_lb.zone_id 
+  value = aws_lb.stage_lb.zone_id
 }
 
 output "tg_stage_arn" {

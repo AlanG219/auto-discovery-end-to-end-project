@@ -2,7 +2,7 @@
 resource "aws_security_group" "jenkins-sg" {
   name        = var.jenkins
   description = "Jenkins Security Group"
-  vpc_id      = var.vpc-id   
+  vpc_id      = var.vpc-id
 
   # Inbound Rules
   ingress {
@@ -17,7 +17,7 @@ resource "aws_security_group" "jenkins-sg" {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  
+    cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
     description = "http port"
@@ -25,7 +25,7 @@ resource "aws_security_group" "jenkins-sg" {
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-  }  
+  }
   ingress {
     description = "https port"
     from_port   = 443
@@ -45,11 +45,11 @@ resource "aws_security_group" "jenkins-sg" {
   }
 }
 
- # Bastion security group
- resource "aws_security_group" "bastion-sg" {
+# Bastion security group
+resource "aws_security_group" "bastion-sg" {
   name        = var.bastion
   description = "bastion Security Group"
-  vpc_id      = var.vpc-id   
+  vpc_id      = var.vpc-id
 
   # Inbound Rules
   ingress {
@@ -74,7 +74,7 @@ resource "aws_security_group" "jenkins-sg" {
 resource "aws_security_group" "sonarqube-sg" {
   name        = var.sonarqube
   description = "Sonarqube Security Group"
-  vpc_id      = var.vpc-id   
+  vpc_id      = var.vpc-id
 
   # Inbound Rules
   ingress {
@@ -97,13 +97,13 @@ resource "aws_security_group" "sonarqube-sg" {
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-  }  
+  }
   ingress {
     description = "https port"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
@@ -121,7 +121,7 @@ resource "aws_security_group" "sonarqube-sg" {
 resource "aws_security_group" "ansible-sg" {
   name        = var.ansible
   description = "Ansible Security Group"
-  vpc_id      = var.vpc-id   
+  vpc_id      = var.vpc-id
 
   # Inbound Rules
   ingress {
@@ -146,7 +146,7 @@ resource "aws_security_group" "ansible-sg" {
 resource "aws_security_group" "nexus-sg" {
   name        = var.nexus
   description = "Nexus Security Group"
-  vpc_id      = var.vpc-id   
+  vpc_id      = var.vpc-id
 
   # Inbound Rules
   ingress {
@@ -161,7 +161,7 @@ resource "aws_security_group" "nexus-sg" {
     from_port   = 8081
     to_port     = 8081
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  
+    cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
     description = "nexus port 2"
@@ -199,7 +199,7 @@ resource "aws_security_group" "nexus-sg" {
 resource "aws_security_group" "asg-sg" {
   name        = var.asg
   description = "asg Security Group"
-  vpc_id      = var.vpc-id   
+  vpc_id      = var.vpc-id
 
   # Inbound Rules
   ingress {
@@ -214,7 +214,7 @@ resource "aws_security_group" "asg-sg" {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  
+    cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
     description = "https port"
@@ -245,7 +245,7 @@ resource "aws_security_group" "asg-sg" {
 resource "aws_security_group" "rds-sg" {
   name        = var.rds
   description = "rds Security Group"
-  vpc_id      = var.vpc-id   
+  vpc_id      = var.vpc-id
 
   # Inbound Rules
   ingress {

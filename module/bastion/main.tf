@@ -5,9 +5,9 @@ resource "aws_instance" "bastion-host" {
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = [var.bastion_sg]
   associate_public_ip_address = true
-  user_data = local.bastion_script
+  user_data                   = local.bastion_script
 
   tags = {
-    Name    = var.name 
+    Name = var.name
   }
 }

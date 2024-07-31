@@ -1,14 +1,15 @@
 # ubuntu ami- ami-0c38b837cd80f13bb
 # Redhat ami- ami-07d4917b6f95f5c2a
 locals {
-  name = "pet_auto"
+  name = "pet-auto"
 }
 
-# data "aws_acm_certificate" "acm-cert" {
-#   domain = "ticktocktv.com" 
-#   types       = ["AMAZON_ISSUED"]
-#   most_recent = true
-# }
+# Data source to fetch the most recent ACM certificate for the domain
+data "aws_acm_certificate" "acm_cert" {
+  domain      = "ticktocktv.com"
+  types       = ["AMAZON_ISSUED"]
+  most_recent = true
+}
 
 module "vpc" {
   source = "./module/vpc"
@@ -63,83 +64,136 @@ module "sonarqube" {
   key_name              = module.keypair.pub_keypair_id
   sonarqube-sg          = module.security_groups.sonarqube-sg
   subnet_id             = module.vpc.pubsn1_id
+  subnet-elb            = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
+  cert-arn              = data.aws_acm_certificate.acm_cert.arn
 }
 
 module "nexus" {
-  source       = "./module/nexus"
-  red_hat      = "ami-07d4917b6f95f5c2a"
-  nexus_subnet = module.vpc.pubsn1_id
-  pub_key      = module.keypair.pub_keypair_id
-  nexus_sg     = module.security_groups.nexus-sg
-  nexus_name   = "${local.name}-nexus"
-  subnet-elb = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
-  #cert-arn = data.aws_acm_certificate.acm-cert.arn
-  newrelic_api_key = "NRAK-RIPYJAFBUGD6OB6W2RANMN3MYSQ"
+  source              = "./module/nexus"
+  red_hat             = "ami-07d4917b6f95f5c2a"
+  nexus_subnet        = module.vpc.pubsn1_id
+  pub_key             = module.keypair.pub_keypair_id
+  nexus_sg            = module.security_groups.nexus-sg
+  nexus_name          = "${local.name}-nexus"
+  subnet-elb          = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
+  cert-arn            = data.aws_acm_certificate.acm_cert.arn
+  newrelic_api_key    = "NRAK-RIPYJAFBUGD6OB6W2RANMN3MYSQ"
   newrelic_account_id = "4466696"
-  newrelic_region = "US"
+  newrelic_region     = "US"
+}
+
+module "jenkins" {
+  source       = "./module/jenkins"
+  ami-redhat   = "ami-07d4917b6f95f5c2a"
+  vpc_id       = module.vpc.vpc_id
+  subnet-id    = module.vpc.prvsn1_id
+  jenkins-sg   = module.security_groups.Jenkins-sg
+  key-name     = module.keypair.pub_keypair_id
+  jenkins-name = "${local.name}_jenkins"
+  nexus-ip     = module.nexus.nexus_ip
+  cert-arn     = data.aws_acm_certificate.acm_cert.arn
+  subnet-elb   = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
+  nr-key       = "NRAK-RIPYJAFBUGD6OB6W2RANMN3MYSQ"
+  nr-acc-id    = "4466696"
+  nr-region    = "US"
 }
 
 module "ansible" {
-  source = "./module/ansible"
-  red_hat = "ami-07d4917b6f95f5c2a"
-  ansible_subnet = module.vpc.prvsn1_id
-  pub_key = module.keypair.pub_keypair_id
-  ansible_sg = module.security_groups.ansible-sg
-  ansible_name = "${local.name}-ansible" 
-  stage-playbook = "${path.root}/module/ansible/stage_playbook.yml"
-  prod-playbook = "${path.root}/module/ansible/prod_playbook.yml"
+  source                 = "./module/ansible"
+  red_hat                = "ami-07d4917b6f95f5c2a"
+  ansible_subnet         = module.vpc.prvsn1_id
+  pub_key                = module.keypair.pub_keypair_id
+  ansible_sg             = module.security_groups.ansible-sg
+  ansible_name           = "${local.name}-ansible"
+  stage-playbook         = "${path.root}/module/ansible/stage_playbook.yml"
+  prod-playbook          = "${path.root}/module/ansible/prod_playbook.yml"
   stage-discovery-script = "${path.root}/module/ansible/auto_discovery_stage.tf"
-  prod-discovery-script = "${path.root}/module/ansible/auto_discovery_prod.tf"
-  private_key = module.keypair.private_key_pem
-  nexus-ip = module.nexus.nexus_ip
-  newrelic-license-key = "NRAK-RIPYJAFBUGD6OB6W2RANMN3MYSQ"
-  newrelic-acct-id = "4466696"  
+  prod-discovery-script  = "${path.root}/module/ansible/auto_discovery_prod.tf"
+  private_key            = module.keypair.private_key_pem
+  nexus-ip               = module.nexus.nexus_ip
+  newrelic-license-key   = "NRAK-RIPYJAFBUGD6OB6W2RANMN3MYSQ"
+  newrelic-acct-id       = "4466696"
+}
+
+data "vault_generic_secret" "vault_secret" {
+  path = "secret/database"
+}
+
+module "rds" {
+  source        = "./module/rds"
+  rds_subgroup  = "rds_subgroup"
+  rds_subnet_id = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
+  db_subtag     = "${local.name}_db_subgroup"
+  db_name       = "petclinic"
+  db_username   = data.vault_generic_secret.vault_secret.data["username"]
+  db_password   = data.vault_generic_secret.vault_secret.data["password"]
+  rds_sg        = [module.security_groups.rds-sg]
 }
 
 module "prod-lb" {
-  source = "./module/prod_lb"
-  name = "${local.name}_prod_alb"  
-  prod-sg = module.securitygroup.asg-sg
-  subnet = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
-  cert-arn = data.aws_acm_certificate.acm-cert.arn
-  vpc_id = module.vpc.vpc_id
+  source   = "./module/prod_lb"
+  name     = "${local.name}-prod-alb"
+  prod-sg  = module.security_groups.asg-sg
+  subnet   = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
+  cert-arn = data.aws_acm_certificate.acm_cert.arn
+  vpc_id   = module.vpc.vpc_id
 }
 
 module "stage-lb" {
-  source = "./module/stage_lb"
-  name = "${local.name}_stage_alb"  
-  stage-sg = module.securitygroup.asg-sg
-  subnet = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
-  cert-arn = data.aws_acm_certificate.acm-cert.arn
-  vpc_id = module.vpc.vpc_id
+  source   = "./module/stage_lb"
+  name     = "${local.name}-stage-alb"
+  stage-sg = module.security_groups.asg-sg
+  subnet   = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
+  cert-arn = data.aws_acm_certificate.acm_cert.arn
+  vpc_id   = module.vpc.vpc_id
 }
 
 module "prod_asg" {
   source                = "./module/prod_asg"
   ami                   = "ami-07d4917b6f95f5c2a"
-  asg-sg                = module.securitygroup.asg-sg
+  asg-sg                = module.security_groups.asg-sg
   pub-key               = module.keypair.pub_keypair_id
   nexus-ip              = module.nexus.nexus_ip
   newrelic-user-licence = "NRAK-RIPYJAFBUGD6OB6W2RANMN3MYSQ"
   newrelic-acct-id      = "4466696"
   vpc-zone-identifier   = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
-  policy-name  = "prod-asg-policy"
-  tg-arn                = module.prod_lb.tg_prod_arn
-  name         = "${local.name}_prod_asg"
+  policy-name           = "prod-asg-policy"
+  tg-arn                = module.prod-lb.tg_prod_arn
+  name                  = "${local.name}_prod_asg"
   newrelic-region       = "US"
 }
 
 module "stage_asg" {
   source                = "./module/stage_asg"
   ami                   = "ami-07d4917b6f95f5c2a"
-  asg-sg                = module.securitygroup.asg-sg
+  asg-sg                = module.security_groups.asg-sg
   pub-key               = module.keypair.pub_keypair_id
   nexus-ip              = module.nexus.nexus_ip
   newrelic-user-licence = "NRAK-RIPYJAFBUGD6OB6W2RANMN3MYSQ"
   newrelic-acct-id      = "4466696"
   vpc-zone-identifier   = [module.vpc.pubsn1_id, module.vpc.pubsn2_id]
-  policy-name  = "stage-asg-policy"
-  tg-arn                = module.stage_lb.tg_stage_arn
-  name         = "${local.name}_stage_asg"
+  policy-name           = "stage-asg-policy"
+  tg-arn                = module.stage-lb.tg_stage_arn
+  name                  = "${local.name}_stage_asg"
   newrelic-region       = "US"
+}
+
+module "route53" {
+  source                = "./module/route53"
+  domain_name           = "ticktocktv.com"
+  jenkins_domain_name   = "jenkins.ticktocktv.com"
+  jenkins_lb_dns_name   = module.jenkins.jenkins_lb_dns
+  jenkins_lb_zone_id    = module.jenkins.jenkins_lb_zoneid
+  nexus_domain_name     = "nexus.ticktocktv.com"
+  nexus_lb_dns_name     = module.nexus.nexus_dns_name
+  nexus_lb_zone_id      = module.nexus.nexus_zone_id
+  sonarqube_domain_name = "sonarqube.ticktocktv.com"
+  sonarqube_lb_dns_name = module.sonarqube.sonarqube_dns_name
+  sonarqube_lb_zone_id  = module.sonarqube.sonarqube_zone_id
+  prod_domain_name      = "prod.ticktocktv.com"
+  prod_lb_dns_name      = module.prod-lb.alb_prod_dns
+  prod_lb_zone_id       = module.prod-lb.alb_prod_zoneid
+  stage_domain_name     = "stage.ticktocktv.com"
+  stage_lb_dns_name     = module.stage-lb.alb_stage_dns
+  stage_lb_zone_id      = module.stage-lb.alb_stage_zoneid
 }

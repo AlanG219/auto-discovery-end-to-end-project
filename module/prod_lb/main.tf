@@ -14,7 +14,7 @@ resource "aws_lb" "prod_lb" {
 
 # Creating Load Balancer Target Group for ASG Prod
 resource "aws_lb_target_group" "lb_tg_prod" {
-  name     = "lb_tg_prod"
+  name     = "lb-tg-prod"
   port     = 8080
   protocol = "HTTP"
   vpc_id   = var.vpc_id

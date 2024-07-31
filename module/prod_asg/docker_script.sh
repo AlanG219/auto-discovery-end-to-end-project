@@ -22,7 +22,7 @@ configure_docker_registry() {
     echo "Configuring Docker to allow insecure registry..."
     sudo bash -c "cat <<EOT > /etc/docker/daemon.json
 {
-    \"insecure-registries\" : [\"${nexus_ip}:8085\"]
+    \"insecure-registries\" : [\"${nexus-ip}:8085\"]
 }
 EOT"
 }
@@ -44,9 +44,9 @@ create_docker_script() {
 set -x
 
 # Define Variables
-IMAGE_NAME=\"${nexus_ip}:8085/petclinicapps\"
+IMAGE_NAME=\"${nexus-ip}:8085/petclinicapps\"
 CONTAINER_NAME=\"appContainer\"
-NEXUS_IP=\"${nexus_ip}:8085\"
+NEXUS_IP=\"${nexus-ip}:8085\"
 
 # Function to login to Docker registry
 authenticate_docker() {
@@ -91,7 +91,7 @@ EOF"
 install_newrelic() {
     echo "Installing New Relic..."
     curl -Ls https://download.newrelic.com/install/newrelic-cli/scripts/install.sh | bash
-    sudo NEW_RELIC_API_KEY="${newrelic_license_key}" NEW_RELIC_ACCOUNT_ID="${newrelic_account_id}" NEW_RELIC_REGION="${newrelic_region}" /usr/local/bin/newrelic install -y
+    sudo NEW_RELIC_API_KEY="${newrelic-license-key}" NEW_RELIC_ACCOUNT_ID="${newrelic-account-id}" NEW_RELIC_REGION="${newrelic-region}" /usr/local/bin/newrelic install -y
 }
 
 # Function to set hostname
