@@ -16,7 +16,7 @@ resource "aws_launch_template" "stage_lt" {
 #Create AutoScaling Group
 resource "aws_autoscaling_group" "stage_asg" {
   name                      = var.name
-  desired_capacity          = 2
+  desired_capacity          = 1
   max_size                  = 2
   min_size                  = 1
   health_check_grace_period = 120
