@@ -15,4 +15,5 @@ cd ..
 
 # Set the Vault address and token as environment variables
 export VAULT_ADDR="https://vault.ticktocktv.com"
+chmod 600 vault/root_token.txt
 export VAULT_TOKEN=$(cat vault/root_token.txt)
