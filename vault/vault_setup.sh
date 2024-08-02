@@ -1,3 +1,5 @@
+# Setup script to run once vault is created
+
 # Define the Vault server SSH user and private key for authentication
 SSH_USER="ubuntu"
 SSH_KEY="./vault-private-key"
@@ -13,4 +15,4 @@ cd ..
 
 # Set the Vault address and token as environment variables
 export VAULT_ADDR="https://vault.ticktocktv.com"
-export VAULT_TOKEN=$(cat root_token.txt)
+export VAULT_TOKEN=$(cat vault/root_token.txt)
