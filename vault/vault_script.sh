@@ -112,11 +112,11 @@ vault login $root_token
 vault secrets enable -path=secret/ kv
 
 # Function to generate a random password without forbidden characters
+sudo apt-get install pwgen
+
 generate_random_password() {
-    # Define the allowed characters, note the brackets around the character set
-    local allowed_chars='[A-Za-z0-9~!#$%^&*()-_=+[]{}|;:,.<>?]'
     # Generate a random password of 16 characters
-    < /dev/urandom tr -dc "$allowed_chars" | head -c 16
+    pwgen -s 16 1 | tr -dc 'A-Za-z0-9~!#$%^&*()-_=+[]{}|;:,.<>?'
 }
 
 # Generate the password and store it in a variable
