@@ -35,8 +35,8 @@ locals {
     # Function to install Ansible and its dependencies
     install_ansible() {
         echo "Installing Ansible and dependencies..."
-        wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-        sudo yum install epel-release-latest-7.noarch.rpm -y
+        wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+        sudo yum install epel-release-latest-9.noarch.rpm -y
         sudo yum update -y
         sudo yum install python python-devel python-pip ansible -y
     }
