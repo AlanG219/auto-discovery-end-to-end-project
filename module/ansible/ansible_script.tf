@@ -46,24 +46,38 @@ locals {
         echo "Copying files to Ansible server..."
         sudo echo "${file(var.stage-playbook)}" >> /etc/ansible/stage_playbook.yml
         sudo echo "${file(var.prod-playbook)}" >> /etc/ansible/prod_playbook.yml
-        sudo echo "${file(var.stage-discovery-script)}" >> /etc/ansible/auto_discovery_stage.tf
-        sudo echo "${file(var.prod-discovery-script)}" >> /etc/ansible/auto_discovery_prod.tf
+        sudo echo "${file(var.stage-discovery-script)}" >> /etc/ansible/auto_discovery_stage.sh
+        sudo echo "${file(var.prod-discovery-script)}" >> /etc/ansible/auto_discovery_prod.sh
         sudo echo "${var.private_key}" >> /home/ec2-user/.ssh/id_rsa
-        sudo bash -c 'echo "NEXUS_IP:${var.nexus-ip}:8085" > /etc/ansible/ansible_vars_file.yml'
+        sudo bash -c 'echo "NEXUS_IP: \"${var.nexus-ip}:8085\"" > /etc/ansible/ansible_vars_file.yml'
+
 
         # Setting permissions for the copied files
         sudo chown -R ec2-user:ec2-user /etc/ansible
-        sudo chmod 400 /home/ec2-user/.ssh/id_rsa
-        sudo chmod 755 /etc/ansible/auto_discovery_stage.tf
-        sudo chmod 755 /etc/ansible/auto_discovery_prod.tf
+        chmod 600 /home/ec2-user/.ssh/id_rsa
+        chmod 700 /home/ec2-user/.ssh
+        chown ec2-user:ec2-user /home/ec2-user/.ssh/id_rsa
+        chown ec2-user:ec2-user /home/ec2-user/.ssh
+        sudo chmod 755 /etc/ansible/auto_discovery_stage.sh
+        sudo chmod 755 /etc/ansible/auto_discovery_prod.sh
     }
 
-    # Function to configure cron jobs for the discovery scripts
     configure_cron_jobs() {
         echo "Configuring cron jobs for the discovery scripts..."
-        sudo bash -c 'echo "* * * * * ec2-user sh /etc/ansible/auto_discovery_stage.tf" > /etc/crontab'
-        sudo bash -c 'echo "* * * * * ec2-user sh /etc/ansible/auto_discovery_prod.tf" > /etc/crontab'
-    }
+
+        # Create a new cron job file in /etc/cron.d
+        sudo bash -c 'cat <<EOF > /etc/cron.d/auto_discovery
+    * * * * * ec2-user /bin/sh /etc/ansible/auto_discovery_stage.sh >> /home/ec2-user/auto_discovery_stage.log 2>&1
+    * * * * * ec2-user /bin/sh /etc/ansible/auto_discovery_prod.sh >> /home/ec2-user/auto_discovery_prod.log 2>&1
+    EOF'
+
+    # Ensure the cron job file has the correct permissions
+    sudo chmod 644 /etc/cron.d/auto_discovery
+
+    echo "Cron jobs configured successfully."
+}
+
+
 
     # Function to install and configure New Relic
     install_newrelic() {
