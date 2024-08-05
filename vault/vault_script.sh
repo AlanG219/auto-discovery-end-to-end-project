@@ -111,11 +111,11 @@ vault login $root_token
 # Enable the KV secrets engine at the specified path
 vault secrets enable -path=secret/ kv
 
-# Function to generate a random password without forbidden characters
+# Install pwgen and add function to generate a random password 
 sudo apt-get install pwgen
 
 generate_random_password() {
-    # Generate a random password of 16 characters
+    # Generate a random password of 16 characters without forbidden characters
     pwgen -s 16 1 | tr -dc 'A-Za-z0-9~!#$%^&*()-_=+[]{}|;:,.<>?'
 }
 
