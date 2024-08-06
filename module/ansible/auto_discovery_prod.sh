@@ -6,7 +6,7 @@ AWS_CLI_PATH='/usr/local/bin/aws'
 PROD_INVENTORY_FILE='/etc/ansible/prod-hosts'
 PROD_IPS_FILE='/etc/ansible/prod-ips.list'
 PROD_ASG_NAME='pet-auto_prod_asg'
-SSH_KEY_PATH="~/.ssh/id_rsa"
+SSH_KEY_PATH="/home/ec2-user/.ssh/id_rsa" 
 WAIT_TIME=20
 
 # Function to discover AWS instances and save private IPs to file

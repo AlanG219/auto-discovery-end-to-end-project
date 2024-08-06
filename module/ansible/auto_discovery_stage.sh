@@ -6,7 +6,7 @@ AWS_CLI_PATH='/usr/local/bin/aws'
 STAGE_INVENTORY_FILE='/etc/ansible/stage-hosts'
 STAGE_IPS_FILE='/etc/ansible/stage-ips.list'
 STAGE_ASG_NAME='pet-auto_stage_asg'
-SSH_KEY_PATH="~/.ssh/id_rsa"
+SSH_KEY_PATH="/home/ec2-user/.ssh/id_rsa" 
 WAIT_TIME=20
 
 # Function to discover AWS instances and save private IPs to file
