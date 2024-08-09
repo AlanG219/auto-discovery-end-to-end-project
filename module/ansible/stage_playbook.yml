@@ -19,7 +19,7 @@
     - name: Log in to Nexus Docker registry
       shell: docker login --username=admin --password=admin123 {{ NEXUS_IP }}
       args:
-       executable: /bin/bash
+        executable: /bin/bash
 
 
     - name: Pull Docker image from Nexus
