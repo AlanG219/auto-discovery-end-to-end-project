@@ -88,6 +88,17 @@ After building Docker images, Jenkins can use Docker to push these images to the
 An application load balancer is also created on the main.tf to load balance traffic.
 
 # Ansible
-Ansible module is created next. Ansible is used to automate the deployment of the application to staging and production environments. It ensures consistent, repeatable, and automated deployments by executing predefined playbooks on the target servers via SSH. This setup helps streamline the deployment process, reduce errors, and maintain uniformity across different environments.
+Ansible module is created next. Ansible is used to automate the deployment of the application to staging and production environments. It ensures consistent, repeatable, and automated deployments by executing predefined playbooks on the target servers via SSH. This setup helps streamline the deployment process, reduce errors, and maintain uniformity across different environments. Along with the ansible script itself there is an auto discovery script for both stage and prod, and
+also a stage and prod yml playbook. On the ansible script there is a cronjob set to execute the auto discovery script every minute. This means every minute the instance will check for AWS instances spun up by ASG, it will then update the ansible inventory file with current instances and check and start docker container if not running already. 
+
+# RDS
+An RDS module is created with an AWS DB instance and subnet group. The RDS instance is the backbone of the pet clinic application’s data layer. It stores all the crucial information about vets, clients, and other entities, ensuring that the data is persistently available, consistent, and secure. By leveraging RDS, the application benefits from a fully managed, reliable, and scalable database solution that supports its core operations. The application connects to the RDS instance using the credentials provided: spring.datasource.username and spring.datasource.password which is going to be retrieved from the vault that will be created. 
+
+# Stage and prod load balancers
+
+
+# Stage and prod auto scaling group 
+
+# Route 53
 
 # New relic
