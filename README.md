@@ -241,7 +241,7 @@ On jenkins new build is selected, pipeline is chosen and configured for github h
 
 ![pipeline2](./readme_images/image-21.png)
 
-On github the Jenkinsfile(pipeline script) is created.
+On github the Jenkinsfile(pipeline script) is created.The Jenkinsfile has been added to root level of this project for review purposes. 
 A dockerfile is created to copy the war file to the container and app.properties is added to point to the RDS database and add the required data. 
 
 ![appprop](./readme_images/image-29.png)
@@ -250,9 +250,9 @@ The welcome and error.html are edited to add to the website aesthetics.
 
 ![welcome](./readme_images/image-30.png)
 
- The Jenkinsfile has been added to root level of this project for review purposes. When ran there was initially some issues with nexus creds and common typo errors, after fixing the pipeline ran up until the login to Nexus docker repo stage where there were issues with access to nexus.ticktocktv.com:8085. It is discovered that the docker repo existed on the nexus IP followed by the port 8085 rather than the url and that the docker repo had been congired for HTTP on port 8085 
+When ran there was initially some issues with nexus creds and common typo errors, after fixing the pipeline ran up until the login to Nexus docker repo stage where there were issues with access to nexus.ticktocktv.com:8085. It is discovered that the docker repo existed on the nexus IP followed by the port 8085 rather than the url and that the docker repo had been congired for HTTP on port 8085 
  
- ![login issue](./readme_images/image-22.png)
+![login issue](./readme_images/image-22.png)
 
 After this there were issues with ansible. Upon investigation and ssh into ansible server via bastion host it is discovered that the cron job set to run the auto discovery script every minute was not running. To fix this the cron job file location is changed to etc/cron.d, chmod 644 is added to give file the correct permissions and the cron job starts working 
 
