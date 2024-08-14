@@ -180,6 +180,7 @@ After this is rectified the terraform apply completes succsessfully with the out
 
 # Setting up 
 The next task is to set up everything and run the Jenkins pipeline to deploy the end product. First Nexus is launched on browser and the password is retrieved from ssh into the instance with the cat command, the password is updated successfully
+
 ![nexus](./readme_images/image-5.png)
 
 The two required repositories are created on Nexus, they are named nexus-repo and docker-repo 
