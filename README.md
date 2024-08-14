@@ -154,45 +154,131 @@ This file is create the remote backend and store the state file on its own root 
 This concludes the IAC section of this project
 
 # Spinning up infrastructure
-Firstly the terminal is accessed on root level, the create_remote_state.sh script is ran to spin up the remote state infrastructure. The vault folder is then accessed and terraform init is ran, the initilization confirms the remote s3 backend created in create_remote_state.sh is set. This is confirmed by checking the AWS console. ![S3 backend](./readme_images/s3-backend.png)
-Terraform plan is run and there is a few issues. General typo's in code along with other small corrections is carried out and terraform apply succeeds. SSH into the vault server confirms there are a few issues that need fixed. The first issue noticed is Consul failed to start. This is worked on with a few commands and rectified, the daemon reload and start consul commands are added to the vault script ![Consul fix](./readme_images/image-1.png).
-Once fixed the root token is retrieved with the cat command and the vault could be successfully logged in to. To prevent having to ssh everytime when spinning up a retrieve token script is created to save the token locally in vault folder. After this is tested successfully the root directory is accessed and the environment variables are retrieved for the vault. Once again when tested successfully a setup_env_vars script is created for convenience. ![scripts](./readme_images/image.png) 
-The setup_environmet_vars script does not work. it is discovered that the "source setup-environment_vars" command must be used instead of sh if running a script instead of pasting the commands into terminal, this is because the shell scripts can only set variables in their local script environment and not outside it on the terminal unless source command is used. variables set with source command and terraform init ran in root directory, once again confirmation that the s3 backend is configured. Apart from the usual typo issues etc when running terraform apply it is discovered that the random generated password for vault is using forbidden characters resulting in failure. To fix this a list of allowed characters is specified in the vault script, however the issue seemed to lay with the openssl rand -base64 password generation being used, to avoid the base64 issues with generating forbidden characters pwgen is installed on vault and used instead. This method works and the script is edited ![pwgen](./readme_images/image-2.png)
+Firstly the terminal is accessed on root level, the create_remote_state.sh script is ran to spin up the remote state infrastructure. The vault folder is then accessed and terraform init is ran, the initilization confirms the remote s3 backend created in create_remote_state.sh is set. This is confirmed by checking the AWS console.
+
+![S3 backend](./readme_images/s3-backend.png)
+
+Terraform plan is run and there is a few issues. General typo's in code along with other small corrections is carried out and terraform apply succeeds. SSH into the vault server confirms there are a few issues that need fixed. The first issue noticed is Consul failed to start. This is worked on with a few commands and rectified, the daemon reload and start consul commands are added to the vault script
+
+ ![Consul fix](./readme_images/image-1.png)
+
+Once fixed the root token is retrieved with the cat command and the vault could be successfully logged in to. To prevent having to ssh everytime when spinning up a retrieve token script is created to save the token locally in vault folder. After this is tested successfully the root directory is accessed and the environment variables are retrieved for the vault. Once again when tested successfully a setup_env_vars script is created for convenience.
+
+![scripts](./readme_images/image.png) 
+
+The setup_environmet_vars script does not work. it is discovered that the "source setup-environment_vars" command must be used instead of sh if running a script instead of pasting the commands into terminal, this is because the shell scripts can only set variables in their local script environment and not outside it on the terminal unless source command is used. variables set with source command and terraform init ran in root directory, once again confirmation that the s3 backend is configured. Apart from the usual typo issues etc when running terraform apply it is discovered that the random generated password for vault is using forbidden characters resulting in failure. To fix this a list of allowed characters is specified in the vault script, however the issue seemed to lay with the openssl rand -base64 password generation being used, to avoid the base64 issues with generating forbidden characters pwgen is installed on vault and used instead. This method works and the script is edited 
+
+![pwgen](./readme_images/image-2.png)
+
 ![vault url](./readme_images/image-4.png)
-The next issue when running terraform apply on root was with the vCPU capacity for auto scaling on the AWS account. To fix this issue the desired capacity of ASG instances was lowered for cost optimization although another fix would be to request a higher capacity on AWS console depending on project requirements. ![vCPU capacity](./readme_images/image-3.png). 
+
+The next issue when running terraform apply on root was with the vCPU capacity for auto scaling on the AWS account. To fix this issue the desired capacity of ASG instances was lowered for cost optimization although another fix would be to request a higher capacity on AWS console depending on project requirements. 
+
+![vCPU capacity](./readme_images/image-3.png). 
+
 After this is rectified the terraform apply completes succsessfully with the outputs of all required server IP addresses. All infrastructure is running. 
 
 # Setting up 
-The next task is to set up everything and run the Jenkins pipeline to deploy the end product. First Nexus is launched on browser and the password is retrieved from ssh into the instance with the cat command, the password is updated successfully ![nexus](./readme_images/image-5.png)
-The two required repositories are created on Nexus, they are named nexus-repo and docker-repo ![nexus-repo](./readme_images/image-6.png)
+The next task is to set up everything and run the Jenkins pipeline to deploy the end product. First Nexus is launched on browser and the password is retrieved from ssh into the instance with the cat command, the password is updated successfully
+![nexus](./readme_images/image-5.png)
+
+The two required repositories are created on Nexus, they are named nexus-repo and docker-repo 
+
+![nexus-repo](./readme_images/image-6.png)
+
 ![docker-repo](./readme_images/image-7.png)
-Docker bearer token realm is also added. After this Sonarqube is accessed and login credentials updated, the tasks involved with Sonarqube are generating a token and creating a web hook ![sonarqube](./readme_images/image-8.png)
-Once this is complete Jenkins is accessed, the password is retrieved the same way as Nexus with cat command except with Jenkins ssh via bastion host is required as it is on the private subnet. Jenkins profile is set up successfully  ![jenkins](./readme_images/image-9.png)
-Next the required plugins to run the pipeline are added to Jenkins ![plugins](./readme_images/image-10.png)
-After the plugins are installed the required credentials are added to Jenkins ![creds](./readme_images/image-11.png)
+
+Docker bearer token realm is also added. After this Sonarqube is accessed and login credentials updated, the tasks involved with Sonarqube are generating a token and creating a web hook 
+
+![sonarqube](./readme_images/image-8.png)
+
+Once this is complete Jenkins is accessed, the password is retrieved the same way as Nexus with cat command except with Jenkins ssh via bastion host is required as it is on the private subnet. Jenkins profile is set up successfully  
+
+![jenkins](./readme_images/image-9.png)
+
+Next the required plugins to run the pipeline are added to Jenkins 
+
+![plugins](./readme_images/image-10.png)
+
+After the plugins are installed the required credentials are added to Jenkins 
+
+![creds](./readme_images/image-11.png)
+
 The Jenkins server is accessed again via bastion host. The java and maven home paths are retrieved with mvn -version command and added to Jenkins on the tools section
+
 ![mvn version](./readme_images/image-13.png)
+
 ![java-maven](./readme_images/image-12.png)
-Next the system settings are accessed in jenkins, Sonarqube url and token from the credentials is added ![soanr](./readme_images/image-14.png)
-Details to setup slack communications with the Cloudhight workspace and desired channel is added ![slack](./readme_images/image-15.png)
-Dependency check is added for the OWasp dependency check feature ![DP-Check](./readme_images/image-16.png)
-Docker is added for Jenkins to use docker commands ![docker](./readme_images/image-17.png)
-Under the user profile settings an API token is created, this will be used when creating github webhhook ![apitoken](./readme_images/image-18.png)
-On github the Cloudhight usteam repo is forked, the webhook is configured successfully using the API token. ![github webhook](./readme_images/image-19.png)
-On jenkins new build is selected, pipeline is chosen and configured for github hook trigger, meaning any time the Jenkinsfile in the repo is edited a new build will deploy on Jenkins ![pipeline](./readme_images/image-20.png)
+
+Next the system settings are accessed in jenkins, Sonarqube url and token from the credentials is added 
+
+![sonar](./readme_images/image-14.png)
+
+Details to setup slack communications with the Cloudhight workspace and desired channel is added 
+
+![slack](./readme_images/image-15.png)
+
+Dependency check is added for the OWasp dependency check feature 
+
+![DP-Check](./readme_images/image-16.png)
+
+Docker is added for Jenkins to use docker commands 
+
+![docker](./readme_images/image-17.png)
+
+Under the user profile settings an API token is created, this will be used when creating github webhhook 
+
+![apitoken](./readme_images/image-18.png)
+
+On github the Cloudhight usteam repo is forked, the webhook is configured successfully using the API token. 
+
+![github webhook](./readme_images/image-19.png)
+
+On jenkins new build is selected, pipeline is chosen and configured for github hook trigger, meaning any time the Jenkinsfile in the repo is edited a new build will deploy on Jenkins 
+
+![pipeline](./readme_images/image-20.png)
+
 ![pipeline2](./readme_images/image-21.png)
+
 On github the Jenkinsfile(pipeline script) is created.
-A dockerfile is created to copy the war file to the container and app.properties is added to point to the RDS database and add the required data. ![appprop](./readme_images/image-29.png)
-The welcome and error.html are edited to add to the website aesthetics. ![welcome](./readme_images/image-30.png)
- The Jenkinsfile has been added to root level of this project for review purposes. When ran there was initially some issues with nexus creds and common typo errors, after fixing the pipeline ran up until the login to Nexus docker repo stage where there were issues with access to nexus.ticktocktv.com:8085. It is discovered that the docker repo existed on the nexus IP followed by the port 8085 rather than the url and that the docker repo had been congired for HTTP on port 8085 ![login issue](./readme_images/image-22.png)
-After this there were issues with ansible. Upon investigation and ssh into ansible server via bastion host it is discovered that the cron job set to run the auto discovery script every minute was not running. To fix this the cron job file location is changed to etc/cron.d, chmod 644 is added to give file the correct permissions and the cron job starts working ![cron job](./readme_images/image-23.png)
-Although the cron job worked it is then not recognising the variables set in the auto discovery script intermittently and instead sometimes leaving them blank. The variables are removed and entered manually into each section to fix this issue and increase reliability. This fixed the issue and the logs showed it was running (on the auto_dicovery.log files created in the cron job section of the script) stage-hosts and prod-hosts files can then be seen in the etc/ansible directory. There is an issue with the stage/prod ASG instances, it is discovered that the script did not run on the instances because they had not been assigned a public IP. With the launch templates a public IP will not be assigned unless specified even though they are on public subnets. To fix this a map public IP on launch line was added to the subnets they reside on ![map ip](./readme_images/image-24.png)
-After testing this the scripts ran and the pipeline worked up until the deploy to stage section. There is an issue with the ansible playbooks, the warn: false line of the playbooks was not being recognised, as this is just a line to suppress warnings it is removed and not required. ![warn false](./readme_images/image-25.png)  
+A dockerfile is created to copy the war file to the container and app.properties is added to point to the RDS database and add the required data. 
+
+![appprop](./readme_images/image-29.png)
+
+The welcome and error.html are edited to add to the website aesthetics. 
+
+![welcome](./readme_images/image-30.png)
+
+ The Jenkinsfile has been added to root level of this project for review purposes. When ran there was initially some issues with nexus creds and common typo errors, after fixing the pipeline ran up until the login to Nexus docker repo stage where there were issues with access to nexus.ticktocktv.com:8085. It is discovered that the docker repo existed on the nexus IP followed by the port 8085 rather than the url and that the docker repo had been congired for HTTP on port 8085 
+ 
+ ![login issue](./readme_images/image-22.png)
+
+After this there were issues with ansible. Upon investigation and ssh into ansible server via bastion host it is discovered that the cron job set to run the auto discovery script every minute was not running. To fix this the cron job file location is changed to etc/cron.d, chmod 644 is added to give file the correct permissions and the cron job starts working 
+
+![cron job](./readme_images/image-23.png)
+
+Although the cron job worked it is then not recognising the variables set in the auto discovery script intermittently and instead sometimes leaving them blank. The variables are removed and entered manually into each section to fix this issue and increase reliability. This fixed the issue and the logs showed it was running (on the auto_dicovery.log files created in the cron job section of the script) stage-hosts and prod-hosts files can then be seen in the etc/ansible directory. There is an issue with the stage/prod ASG instances, it is discovered that the script did not run on the instances because they had not been assigned a public IP. With the launch templates a public IP will not be assigned unless specified even though they are on public subnets. To fix this a map public IP on launch line was added to the subnets they reside on 
+
+![map ip](./readme_images/image-24.png)
+
+After testing this the scripts ran and the pipeline worked up until the deploy to stage section. There is an issue with the ansible playbooks, the warn: false line of the playbooks was not being recognised, as this is just a line to suppress warnings it is removed and not required. 
+
+![warn false](./readme_images/image-25.png)  
+
 ![removed](./readme_images/image-26.png)
-The pipeline is ran again and runs everything but fails. There is an issue with the dependency check ![stages](image-27.png)
-The dependency check is failing as there is no API key provided. this is not required but it takes longer to run without it so this error is suppressed with the --failOnCVSS 0 added to the pipeline script. The dependency check runs successfully and the rest of the script completes with success ![script run](image-28.png)
+
+The pipeline is ran again and runs everything but fails. There is an issue with the dependency check 
+
+![stages](image-27.png)
+
+The dependency check is failing as there is no API key provided. this is not required but it takes longer to run without it so this error is suppressed with the --failOnCVSS 0 added to the pipeline script. The dependency check runs successfully and the rest of the script completes with success 
+
+![script run](image-28.png)
+
 ![slack](./readme_images/image-31.png)
+
 The stage and prod.ticktocktv.com url's are working and tested. The database is also successfully set up and can show and add owners
+
 ![website](./readme_images/image-32.png)
 ![website1](./readme_images/image-33.png)
 ![website2](./readme_images/image-34.png)
