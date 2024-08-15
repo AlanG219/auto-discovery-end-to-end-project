@@ -249,7 +249,7 @@ On jenkins new build is selected, pipeline is chosen and configured for github h
 ![pipeline2](./readme_images/image-21.png)
 
 On github the Jenkinsfile(pipeline script) is created.The Jenkinsfile has been added to root level of this project for review purposes. 
-A dockerfile is created to copy the war file to the container and app.properties is added to point to the RDS database and add the required data. 
+A dockerfile is created to copy the war file to the container and app.properties is added to point to the RDS database with the vault username and password and add the required data from the github repo. 
 
 ![appprop](./readme_images/image-29.png)
 
