@@ -29,14 +29,6 @@ pipeline{
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
-
-
-
-        // stage('Test Code') {
-        //     steps {
-        //         sh 'mvn test -Dcheckstyle.skip'
-        //     }
-        // }
         stage('Build Artifact') {
             steps {
                 sh 'mvn clean package -DskipTests -Dcheckstyle.skip'
