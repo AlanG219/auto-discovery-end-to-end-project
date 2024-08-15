@@ -176,7 +176,14 @@ The next issue when running terraform apply on root was with the vCPU capacity f
 
 ![vCPU capacity](./readme_images/image-3.png). 
 
-After this is rectified the terraform apply completes succsessfully with the outputs of all required server IP addresses. All infrastructure is running. 
+After this is rectified the terraform apply completes succsessfully with the outputs of all required server IP addresses. All infrastructure is running.
+sudo grep -i 'jenkins\|docker\|trivy' /var/log/cloud-init-output.log is entered into the jenkins instance via bastion host ssh, this is to confirm everything installed as expected. sudo grep -i 'nexus' /var/log/cloud-init-output.log is also tested via ssh into nexus instance. it is also confirmed on the sonarqube instance that postgreql, sonarqube and nginx are running. On the newrelic dashboard all entities can be seen meaning that it is set up successfully
+
+![newrelic](./readme_images/image-36.png)
+
+On slack new relic is integrated with the new relic alerts app. This will send real time alerts to slack if there is any issues to report.
+
+![alt text](./readme_images/image-37.png)
 
 # Setting up 
 The next task is to set up everything and run the Jenkins pipeline to deploy the end product. First Nexus is launched on browser and the password is retrieved from ssh into the instance with the cat command, the password is updated successfully
@@ -211,7 +218,7 @@ The Jenkins server is accessed again via bastion host. The java and maven home p
 
 ![java-maven](./readme_images/image-12.png)
 
-Next the system settings are accessed in jenkins, Sonarqube url and token from the credentials is added 
+Next the system settings are accessed in jenkins, Sonarqube url and token from the credentials is added to allow jenkins communication with sonarqube.
 
 ![sonar](./readme_images/image-14.png)
 
@@ -223,7 +230,7 @@ Dependency check is added for the OWasp dependency check feature
 
 ![DP-Check](./readme_images/image-16.png)
 
-Docker is added for Jenkins to use docker commands 
+Docker is added for Jenkins, Installing Docker in Jenkins enables the CI/CD pipeline to build, test, and deploy applications in a consistent, containerized environment.
 
 ![docker](./readme_images/image-17.png)
 
@@ -270,11 +277,11 @@ After testing this the scripts ran and the pipeline worked up until the deploy t
 
 The pipeline is ran again and runs everything but fails. There is an issue with the dependency check 
 
-![stages](image-27.png)
+![stages](./readme_images/image-27.png)
 
 The dependency check is failing as there is no API key provided. this is not required but it takes longer to run without it so this error is suppressed with the --failOnCVSS 0 added to the pipeline script. The dependency check runs successfully and the rest of the script completes with success 
 
-![script run](image-28.png)
+![script run](./readme_images/image-28.png)
 
 ![slack](./readme_images/image-31.png)
 
