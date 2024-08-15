@@ -20,7 +20,7 @@
       shell: docker login --username=admin --password=admin123 {{ NEXUS_IP }}
       args:
         executable: /bin/bash
-        warn: false
+
 
     - name: Pull Docker image from Nexus
       shell: docker pull "{{ NEXUS_IP }}/petclinicapps"

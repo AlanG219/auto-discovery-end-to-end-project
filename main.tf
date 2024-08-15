@@ -107,8 +107,8 @@ module "ansible" {
   ansible_name           = "${local.name}-ansible"
   stage-playbook         = "${path.root}/module/ansible/stage_playbook.yml"
   prod-playbook          = "${path.root}/module/ansible/prod_playbook.yml"
-  stage-discovery-script = "${path.root}/module/ansible/auto_discovery_stage.tf"
-  prod-discovery-script  = "${path.root}/module/ansible/auto_discovery_prod.tf"
+  stage-discovery-script = "${path.root}/module/ansible/auto_discovery_stage.sh"
+  prod-discovery-script  = "${path.root}/module/ansible/auto_discovery_prod.sh"
   private_key            = module.keypair.private_key_pem
   nexus-ip               = module.nexus.nexus_ip
   newrelic-license-key   = "NRAK-RIPYJAFBUGD6OB6W2RANMN3MYSQ"
