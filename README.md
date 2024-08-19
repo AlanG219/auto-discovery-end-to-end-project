@@ -27,7 +27,7 @@ Visual Studio Code: For development and editing.
 
 # Architectural diagram 
 
-![architectural diagram](./readme_images/image-39.png)
+![architectural diagram](./readme_images/image-38.png)
 
 # Setting up github repository
 A github repo is created for this project. Even though this is a solo project a testing branch is created so that 
