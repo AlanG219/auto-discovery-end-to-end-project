@@ -26,6 +26,10 @@ Docker Hub: For container image storage.
 Amazon Web Services (AWS): For cloud infrastructure.
 Visual Studio Code: For development and editing.
 
+# Architectural diagram 
+
+![architectural diagram](./readme_images/image-38.png)
+
 # Setting up github repository
 A github repo is created for this project. Even though this is a solo project a testing branch is created so that 
 code can be organized, tested and experimented outside of the main branch, once tested it is pushed to main.
@@ -282,6 +286,8 @@ The pipeline is ran again and runs everything but fails. There is an issue with 
 The dependency check is failing as there is no API key provided. this is not required but it takes longer to run without it so this error is suppressed with the --failOnCVSS 0 added to the pipeline script. The dependency check runs successfully and the rest of the script completes with success 
 
 ![script run](./readme_images/image-28.png)
+
+![pipeline output](./readme_images/image-39.png)
 
 ![slack](./readme_images/image-31.png)
 
