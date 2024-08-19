@@ -21,8 +21,7 @@ Jenkins: For automating the CI/CD pipeline.
 New Relic: For monitoring application performance and infrastructure.
 Slack: For team communication and notifications.
 GitHub: For version control and collaboration.
-Nexus: For repository management.
-Docker Hub: For container image storage.
+Nexus: For repository management and for docker container image storage.
 Amazon Web Services (AWS): For cloud infrastructure.
 Visual Studio Code: For development and editing.
 
